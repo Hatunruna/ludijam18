@@ -25,6 +25,9 @@
 
 namespace no {
 
+  static constexpr float ViewSize = 500.0f;
+  static constexpr gf::Vector2f WorldMapSize = gf::Vector2f(1920.0f, 982.0f);
+
   WorldMap::WorldMap()
   : m_texture(gResourceManager().getTexture("world-map.png"))
   {
@@ -67,9 +70,14 @@ namespace no {
     switch (event.type) {
       case gf::EventType::MouseMoved:
         if (m_state == State::Moving) {
+          gf::Vector2f currentCenter = m_view.getCenter();
+          gf::Vector2f centerBound = WorldMapSize / 2 - m_view.getSize() / 2;
+
           gf::Vector2f oldPosition = m_target.mapPixelToCoords(m_mousePosition, m_view);
           gf::Vector2f newPosition = m_target.mapPixelToCoords(event.mouseCursor.coords, m_view);
-          m_view.move(oldPosition - newPosition);
+
+          currentCenter += (oldPosition - newPosition);
+          m_view.setCenter(gf::clamp(currentCenter, -centerBound, centerBound));
         }
 
         m_mousePosition = event.mouseCursor.coords;
