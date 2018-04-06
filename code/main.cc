@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <iostream>
+
 #include <gf/Action.h>
 #include <gf/Clock.h>
 #include <gf/Color.h>
@@ -56,6 +58,7 @@ int main() {
   gf::ViewContainer views;
 
   gf::ExtendView mainView(ViewCenter, ViewSize);
+  mainView.setViewport({0.075f, 0.0f, 0.925f, 1.0f});
   views.addView(mainView);
 
   gf::ScreenView hudView;
@@ -115,7 +118,7 @@ int main() {
 
   // game loop
 
-  renderer.clear(gf::Color::White);
+  renderer.clear(gf::Color::fromRgba32(0x19, 0x74, 0xD2));
 
   gf::Clock clock;
 
@@ -128,6 +131,12 @@ int main() {
       actions.processEvent(event);
       views.processEvent(event);
       adaptor.processEvent(event);
+
+      if (event.type == gf::EventType::MouseButtonPressed && event.mouseButton.button == gf::MouseButton::Middle) {
+        gf::Vector2f pos = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
+        std::cout << pos.x << ',' << pos.y << '\n';
+      }
+
     }
 
     if (closeWindowAction.isActive()) {

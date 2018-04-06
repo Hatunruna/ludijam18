@@ -25,7 +25,7 @@
 
 namespace no {
 
-  static constexpr float ViewSize = 500.0f;
+  static constexpr float Padding = 20.0f;
   static constexpr gf::Vector2f WorldMapSize = gf::Vector2f(1920.0f, 982.0f);
 
   WorldMap::WorldMap()
@@ -40,6 +40,7 @@ namespace no {
 
   void WorldMap::render(gf::RenderTarget& target, const gf::RenderStates& states) {
     gf::Sprite sprite(m_texture);
+    sprite.setColor(gf::Color::fromRgba32(0x82, 0x66, 0x44));
     sprite.setAnchor(gf::Anchor::Center);
     target.draw(sprite);
   }
@@ -71,7 +72,7 @@ namespace no {
       case gf::EventType::MouseMoved:
         if (m_state == State::Moving) {
           gf::Vector2f currentCenter = m_view.getCenter();
-          gf::Vector2f centerBound = WorldMapSize / 2 - m_view.getSize() / 2;
+          gf::Vector2f centerBound = WorldMapSize / 2 - m_view.getSize() / 2 + Padding;
 
           gf::Vector2f oldPosition = m_target.mapPixelToCoords(m_mousePosition, m_view);
           gf::Vector2f newPosition = m_target.mapPixelToCoords(event.mouseCursor.coords, m_view);
@@ -84,13 +85,15 @@ namespace no {
         break;
 
       case gf::EventType::MouseButtonPressed:
-        if (isCursorOnView(event.mouseButton.coords, m_target.getSize(), m_view.getViewport())) {
+        if (event.mouseButton.button == gf::MouseButton::Right && isCursorOnView(event.mouseButton.coords, m_target.getSize(), m_view.getViewport())) {
           m_state = State::Moving;
         }
         break;
 
       case gf::EventType::MouseButtonReleased:
-        m_state = State::Stationary;
+        if (event.mouseButton.button == gf::MouseButton::Right) {
+          m_state = State::Stationary;
+        }
         break;
 
       default:
