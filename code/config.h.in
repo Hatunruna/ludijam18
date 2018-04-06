@@ -18,6 +18,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define KROKODILE_DATA_DIR "@KROKODILE_DATA_DIR@"
+#define NOINC_DATA_DIR "@NOINC_DATA_DIR@"
 
 #endif // CONFIG_H

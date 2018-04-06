@@ -8,7 +8,7 @@ include(GNUInstallDirs)
 
 find_package(gf REQUIRED)
 
-set(LUDIJAM_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/games/no-inc")
+set(NOINC_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/games/no-inc")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/code/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
 if(NOT MSVC)
