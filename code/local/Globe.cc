@@ -22,63 +22,81 @@
 
 namespace no {
 
-  static constexpr gf::Vector2f Consumers[] = {
-    { -44.7143, -270.833 }, // Europe
-    { 137.001, -345.486 }, // Russia
-
-    { -545.688, -200.521 }, // US, East Coast
-    { -807.028, -222.222 }, // US, West Coast
-
-    { -327.507, 141.493 }, // Brazil
-
-    { 75.3562, 283.854 }, // South Africa
-
-    { 450.797, -89.618 }, // India
-    { 754.319, -197.049 }, // Japan-Korea
-    { 649.008, -133.681 }, // China
-
-    { 817.7, 301.215 }, // Australia
+  enum class LocationType {
+    Consumer,
+    OilSource,
+    UraniumSource,
   };
 
-  static constexpr gf::Vector2f OilSources[] = {
-    { 227.913, -144.097 }, // Koweit
-    { 256.565, -105.903 }, // Saudi Arabia
-    { 194.92, -197.917 }, // Irak
-
-    { -56.0014, -140.625 }, // Algeria
-    { -25.613, 36.4583 }, // Nigeria
-
-    { -57.7379, -371.528 }, // North Sea
-
-    { -788.18, -410.799 }, // Alaska
-    { -698.752, -323.993 }, // Canada
-    { -669.232, -80.0694 }, // Mexico
-    { -682.255, -157.326 }, // Texas
-
-    { -505.134, -8.02088 }, // Venezuela
-    { -599.772, 72.7083 }, // Ecuador
-    { -459.986, 380.868 }, // Argentina
-
-    { 243.288, -262.361 }, // Caspian Sea
-    { 206.822, -354.375 }, // Oural
-    { 331.848, -389.097 }, // Siberia
-
-    { 402.175, -82.6735 }, // India
-    { 663.515, -251.944 }, // China-East
-    { 447.324, -232.847 }, // China-West
-
-    { 601.87, 84.8611 }, // Indonesia
+  struct Location {
+    LocationType type;
+    gf::Vector2f position;
   };
 
+  static constexpr Location Locations[] = {
+    /*
+     * consumers
+     */
 
+    { LocationType::Consumer, { -44.7143f, -270.833f } }, // Europe
+    { LocationType::Consumer, { 137.001f, -345.486f } }, // Russia
 
-  static constexpr gf::Vector2f UraniumSources[] = {
-    { 352.071, -250.868 }, // Kazakhstan
-    { -497.935, -286.458 }, // Canada
-    { 775.157, 292.535 }, // Australia
-    { -20.1503, -46.007 }, // Niger
-    { 117.9, -350.694 }, // Russia
-    { 28.4711, 214.41 }, // Namibia
+    { LocationType::Consumer, { -545.688f, -200.521f } }, // US, East Coast
+    { LocationType::Consumer, { -807.028f, -222.222f } }, // US, West Coast
+
+    { LocationType::Consumer, { -327.507f, 141.493f } }, // Brazil
+
+    { LocationType::Consumer, { 75.3562f, 283.854f } }, // South Africa
+
+    { LocationType::Consumer, { 450.797f, -89.618f } }, // India
+    { LocationType::Consumer, { 754.319f, -197.049f } }, // Japan-Korea
+    { LocationType::Consumer, { 649.008f, -133.681f } }, // China
+
+    { LocationType::Consumer, { 817.7f, 301.215f } }, // Australia
+
+    /*
+     * oil sources
+     */
+
+    { LocationType::OilSource, { 227.913f, -144.097f } }, // Koweit
+    { LocationType::OilSource, { 256.565f, -105.903f } }, // Saudi Arabia
+    { LocationType::OilSource, { 194.92f, -197.917f } }, // Irak
+
+    { LocationType::OilSource, { -56.0014f, -140.625f } }, // Algeria
+    { LocationType::OilSource, { -25.613f, 36.4583f } }, // Nigeria
+
+    { LocationType::OilSource, { -57.7379f, -371.528f } }, // North Sea
+
+    { LocationType::OilSource, { -788.18f, -410.799f } }, // Alaska
+    { LocationType::OilSource, { -698.752f, -323.993f } }, // Canada
+    { LocationType::OilSource, { -669.232f, -80.0694f } }, // Mexico
+    { LocationType::OilSource, { -682.255f, -157.326f } }, // Texas
+
+    { LocationType::OilSource, { -505.134f, -8.02088f } }, // Venezuela
+    { LocationType::OilSource, { -599.772f, 72.7083f } }, // Ecuador
+    { LocationType::OilSource, { -459.986f, 380.868f } }, // Argentina
+
+    { LocationType::OilSource, { 243.288f, -262.361f } }, // Caspian Sea
+    { LocationType::OilSource, { 206.822f, -354.375f } }, // Oural
+    { LocationType::OilSource, { 331.848f, -389.097f } }, // Siberia
+
+    { LocationType::OilSource, { 402.175f, -82.6735f } }, // India
+    { LocationType::OilSource, { 663.515f, -251.944f } }, // China-East
+    { LocationType::OilSource, { 447.324f, -232.847f } }, // China-West
+
+    { LocationType::OilSource, { 601.87f, 84.8611f } }, // Indonesia
+
+    /*
+     * uranium sources
+     */
+
+    { LocationType::UraniumSource, { 352.071f, -250.868f } }, // Kazakhstan
+    { LocationType::UraniumSource, { -497.935f, -286.458f } }, // Canada
+    { LocationType::UraniumSource, { 775.157f, 292.535f } }, // Australia
+    { LocationType::UraniumSource, { -20.1503f, -46.007f } }, // Niger
+    { LocationType::UraniumSource, { 117.9f, -350.694f } }, // Russia
+    { LocationType::UraniumSource, { 28.4711f, 214.41f } }, // Namibia
+
   };
 
   Globe::Globe()
@@ -91,35 +109,35 @@ namespace no {
   }
 
   void Globe::render(gf::RenderTarget& target, const gf::RenderStates& states) {
-    for (auto& pos : Consumers) {
-      gf::CircleShape shape(40.0f);
+    for (auto& loc : Locations) {
+      gf::CircleShape shape;
       shape.setColor(gf::Color::Transparent);
-      shape.setOutlineColor(gf::Color::Azure * gf::Color::Opaque(0.7f));
-      shape.setOutlineThickness(10.0f);
-      shape.setPosition(pos);
+
+      switch (loc.type) {
+        case LocationType::Consumer:
+          shape.setRadius(40.0f);
+          shape.setOutlineColor(gf::Color::Azure * gf::Color::Opaque(0.7f));
+          shape.setOutlineThickness(10.0f);
+          break;
+
+        case LocationType::OilSource:
+          shape.setRadius(15.0f);
+          shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
+          shape.setOutlineThickness(5.0f);
+          break;
+
+        case LocationType::UraniumSource:
+          shape.setRadius(15.0f);
+          shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
+          shape.setOutlineThickness(5.0f);
+          break;
+      }
+
+      shape.setPosition(loc.position);
       shape.setAnchor(gf::Anchor::Center);
       target.draw(shape);
     }
 
-    for (auto& pos : OilSources) {
-      gf::CircleShape shape(15.0f);
-      shape.setColor(gf::Color::Transparent);
-      shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
-      shape.setOutlineThickness(5.0f);
-      shape.setPosition(pos);
-      shape.setAnchor(gf::Anchor::Center);
-      target.draw(shape);
-    }
-
-    for (auto& pos : UraniumSources) {
-      gf::CircleShape shape(15.0f);
-      shape.setColor(gf::Color::Transparent);
-      shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
-      shape.setOutlineThickness(5.0f);
-      shape.setPosition(pos);
-      shape.setAnchor(gf::Anchor::Center);
-      target.draw(shape);
-    }
   }
 
 }
