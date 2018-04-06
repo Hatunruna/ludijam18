@@ -72,9 +72,14 @@ namespace no {
 
 
 
-//   static constexpr gf::Vector2f UraniumSources[] = {
-//
-//   };
+  static constexpr gf::Vector2f UraniumSources[] = {
+    { 352.071, -250.868 }, // Kazakhstan
+    { -497.935, -286.458 }, // Canada
+    { 775.157, 292.535 }, // Australia
+    { -20.1503, -46.007 }, // Niger
+    { 117.9, -350.694 }, // Russia
+    { 28.4711, 214.41 }, // Namibia
+  };
 
   Globe::Globe()
   {
@@ -100,6 +105,16 @@ namespace no {
       gf::CircleShape shape(15.0f);
       shape.setColor(gf::Color::Transparent);
       shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
+      shape.setOutlineThickness(5.0f);
+      shape.setPosition(pos);
+      shape.setAnchor(gf::Anchor::Center);
+      target.draw(shape);
+    }
+
+    for (auto& pos : UraniumSources) {
+      gf::CircleShape shape(15.0f);
+      shape.setColor(gf::Color::Transparent);
+      shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
       shape.setOutlineThickness(5.0f);
       shape.setPosition(pos);
       shape.setAnchor(gf::Anchor::Center);
