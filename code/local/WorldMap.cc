@@ -26,7 +26,7 @@
 namespace no {
 
   static constexpr float Padding = 20.0f;
-  static constexpr gf::Vector2f WorldMapSize = gf::Vector2f(1920.0f, 982.0f);
+  static constexpr gf::Vector2f WorldMapSize = gf::Vector2f(2000, 1075);
 
   WorldMap::WorldMap()
   : m_texture(gResourceManager().getTexture("world-map.png"))

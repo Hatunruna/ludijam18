@@ -27,6 +27,7 @@
 #include <gf/Views.h>
 #include <gf/Window.h>
 
+#include "local/Globe.h"
 #include "local/Singletons.h"
 #include "local/WorldMap.h"
 
@@ -112,6 +113,8 @@ int main() {
   no::WorldMap map;
   mainEntities.addEntity(map);
 
+  no::Globe globe;
+  mainEntities.addEntity(globe);
 
   gf::EntityContainer hudEntities;
   // add entities to hudEntities
@@ -134,7 +137,7 @@ int main() {
 
       if (event.type == gf::EventType::MouseButtonPressed && event.mouseButton.button == gf::MouseButton::Middle) {
         gf::Vector2f pos = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
-        std::cout << pos.x << ',' << pos.y << '\n';
+        std::cout << "{ " << pos.x << ", " << pos.y << " },\n";
       }
 
     }

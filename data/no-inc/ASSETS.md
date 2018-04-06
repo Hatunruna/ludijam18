@@ -1,3 +1,3 @@
-world-map.{svg,png}:
+world-map.png:
   License: CC0
-  URL: https://pixabay.com/fr/carte-du-monde-terre-global-146505/
+  URL: https://commons.wikimedia.org/wiki/File:Simple_world_map.svg
