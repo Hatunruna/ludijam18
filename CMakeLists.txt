@@ -17,6 +17,8 @@ endif()
 
 add_executable(no-inc
   code/main.cc
+  code/local/Singletons.cc
+  code/local/WorldMap.cc
 )
 
 target_include_directories(no-inc

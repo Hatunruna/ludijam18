@@ -1,5 +1,5 @@
 /*
- * Ludijam
+ * NO Inc.
  * Copyright (C) 2018 Hatunruna team
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,9 +25,14 @@
 #include <gf/Views.h>
 #include <gf/Window.h>
 
+#include "local/Singletons.h"
+#include "local/WorldMap.h"
+
+#include "config.h"
+
 int main() {
   static constexpr gf::Vector2u ScreenSize(1024, 576);
-  static constexpr gf::Vector2f ViewSize(100.0f, 100.0f); // dummy values
+  static constexpr gf::Vector2f ViewSize(500.0f, 500.0f); // dummy values
   static constexpr gf::Vector2f ViewCenter(0.0f, 0.0f); // dummy values
 
   // initialization
@@ -37,6 +42,14 @@ int main() {
   window.setFramerateLimit(60);
 
   gf::RenderWindow renderer(window);
+
+  // singletons
+
+  gf::SingletonStorage<gf::ResourceManager> storageForResourceManager(no::gResourceManager);
+  no::gResourceManager().addSearchDir(NOINC_DATA_DIR);
+
+  gf::SingletonStorage<gf::MessageManager> storageForMessageManager(no::gMessageManager);
+  gf::SingletonStorage<gf::Random> storageForRandom(no::gRandom);
 
   // views
 
@@ -49,6 +62,8 @@ int main() {
   views.addView(hudView);
 
   views.setInitialScreenSize(ScreenSize);
+
+  no::WorldView adaptor(renderer, mainView);
 
   // actions
 
@@ -90,7 +105,10 @@ int main() {
   // entities
 
   gf::EntityContainer mainEntities;
-  // add entities to mainEntities
+
+  no::WorldMap map;
+  mainEntities.addEntity(map);
+
 
   gf::EntityContainer hudEntities;
   // add entities to hudEntities
@@ -109,6 +127,7 @@ int main() {
     while (window.pollEvent(event)) {
       actions.processEvent(event);
       views.processEvent(event);
+      adaptor.processEvent(event);
     }
 
     if (closeWindowAction.isActive()) {
