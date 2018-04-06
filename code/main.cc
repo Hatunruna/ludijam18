@@ -32,7 +32,7 @@ int main() {
 
   // initialization
 
-  gf::Window window("Ludijam", ScreenSize);
+  gf::Window window("NO Inc.", ScreenSize);
   window.setVerticalSyncEnabled(true);
   window.setFramerateLimit(60);
 

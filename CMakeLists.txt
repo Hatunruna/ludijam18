@@ -8,33 +8,33 @@ include(GNUInstallDirs)
 
 find_package(gf REQUIRED)
 
-set(LUDIJAM_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/games/ludijam")
+set(LUDIJAM_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/games/no-inc")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/code/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
 if(NOT MSVC)
   add_definitions(-Wall -Wextra -g -O2 -std=c++14 -pedantic)
 endif()
 
-add_executable(ludijam
+add_executable(no-inc
   code/main.cc
 )
 
-target_include_directories(ludijam
+target_include_directories(no-inc
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/code
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(ludijam
+target_link_libraries(no-inc
   gf::gf0
 )
 
 install(
-  TARGETS ludijam
+  TARGETS no-inc
   RUNTIME DESTINATION games
 )
 
 install(
-  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/ludijam"
+  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/no-inc"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/games"
 )
