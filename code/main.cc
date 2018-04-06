@@ -27,6 +27,7 @@
 #include <gf/Views.h>
 #include <gf/Window.h>
 
+#include <local/BuildMenu.h>
 #include "local/Globe.h"
 #include "local/Singletons.h"
 #include "local/WorldMap.h"
@@ -119,6 +120,9 @@ int main() {
   gf::EntityContainer hudEntities;
   // add entities to hudEntities
 
+  no::BuildMenu buildMenu;
+  hudEntities.addEntity(buildMenu);
+
   // game loop
 
   renderer.clear(gf::Color::fromRgba32(0x19, 0x74, 0xD2));
@@ -135,11 +139,25 @@ int main() {
       views.processEvent(event);
       adaptor.processEvent(event);
 
-      if (event.type == gf::EventType::MouseButtonPressed && event.mouseButton.button == gf::MouseButton::Middle) {
-        gf::Vector2f pos = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
-        std::cout << "{ " << pos.x << ", " << pos.y << " },\n";
-      }
+      switch (event.type) {
+        case gf::EventType::MouseMoved:
+          buildMenu.getWidgetContainer().pointTo(renderer.mapPixelToCoords(event.mouseCursor.coords));
+          break;
 
+        case gf::EventType::MouseButtonPressed:
+          if(event.mouseButton.button == gf::MouseButton::Left) {
+            buildMenu.getWidgetContainer().pointTo(renderer.mapPixelToCoords(event.mouseButton.coords));
+            buildMenu.getWidgetContainer().triggerAction();
+          }
+          else if (event.mouseButton.button == gf::MouseButton::Middle) {
+            gf::Vector2f pos = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
+            std::cout << "{ " << pos.x << ", " << pos.y << " },\n";
+          }
+          break;
+
+        default:
+          break;
+      }
     }
 
     if (closeWindowAction.isActive()) {
