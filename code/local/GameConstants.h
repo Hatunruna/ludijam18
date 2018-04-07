@@ -23,6 +23,8 @@ namespace no {
 
   static constexpr float BaseValueOilPump = 100.0f;
 
+  /// FOR DEBUG
+  static constexpr float MaintenanceCharge = 1.0f; // 1/sec
 }
 
 #endif

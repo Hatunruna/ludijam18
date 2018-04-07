@@ -24,6 +24,7 @@
 #include <gf/Shapes.h>
 #include <gf/Sprite.h>
 
+#include "GameConstants.h"
 #include "Singletons.h"
 
 namespace no {
@@ -261,7 +262,20 @@ namespace no {
   }
 
   void Globe::update(gf::Time time) {
+    float balance = 0.0f;
 
+    // Compute maintenance charge
+    for (auto &location: m_locations) {
+      if (location.isBuild && (location.type == LocationType::OilSource || location.type == LocationType::UraniumSource)) {
+        balance += -MaintenanceCharge * time.asSeconds();
+      }
+    }
+
+    // TODO add profit form export path
+
+    BalanceOperation operation;
+    operation.value = balance;
+    gMessageManager().sendMessage(&operation);
   }
 
   static constexpr float ResourcesRadius = 15.0f;
