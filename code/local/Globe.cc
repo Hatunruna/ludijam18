@@ -411,7 +411,7 @@ namespace no {
       // Create circle to check position
       gf::CircF circle(location.position, WaypointHitbox);
       auto previousLocation = m_tempRoute.back();
-      if ((location.type == LocationType::None || location.type == LocationType::Consumer) && circle.contains(query->position) && isValidRoute(previousLocation, i)) {
+      if (circle.contains(query->position) && isValidRoute(previousLocation, i)) {
         query->isValid = true;
         query->isEnded = location.type == LocationType::Consumer;
 
