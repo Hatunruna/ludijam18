@@ -278,6 +278,16 @@ namespace no {
       target.draw(line);
     }
 
+    // Draw active route
+    for (auto &path: m_exportPaths) {
+      drawPath(target, path);
+    }
+
+    // Draw the temporary path
+    if (m_tempRoute.size() > 0) {
+      drawPath(target, m_tempRoute);
+    }
+
     for (auto& loc : m_locations) {
       if (loc.isBuild) {
         gf::Sprite sprite;
@@ -339,16 +349,6 @@ namespace no {
         shape.setAnchor(gf::Anchor::Center);
         target.draw(shape);
       }
-    }
-
-    // Draw active route
-    for (auto &path: m_exportPaths) {
-      drawPath(target, path);
-    }
-
-    // Draw the temporary path
-    if (m_tempRoute.size() > 0) {
-      drawPath(target, m_tempRoute);
     }
   }
 
