@@ -27,6 +27,8 @@
 
 namespace no {
 
+  using ExportPath = std::vector<std::size_t>;
+
   class Globe : public gf::Entity {
   public:
     Globe();
@@ -63,13 +65,17 @@ namespace no {
     std::size_t addAnonymousLocation(gf::Vector2f pos);
     void addRoute(std::size_t endPoint0, std::size_t endPoint1);
     bool isValidRoute(std::size_t endPoint0, std::size_t endPoint1);
+    void drawPath(gf::RenderTarget& target, ExportPath &path);
 
   private:
     std::vector<Location> m_locations;
     std::vector<Route> m_routes;
 
+    // Definitive route
+    std::vector<ExportPath> m_exportPaths;
+
     // Temporary route
-    std::vector<std::size_t> m_tempRoute;
+    ExportPath m_tempRoute;
 
     // Texture for resources
     gf::Texture& m_oilPumpTexture;

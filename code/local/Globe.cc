@@ -341,18 +341,14 @@ namespace no {
       }
     }
 
+    // Draw active route
+    for (auto &path: m_exportPaths) {
+      drawPath(target, path);
+    }
+
     // Draw the temporary path
     if (m_tempRoute.size() > 0) {
-      for (std::size_t i = 0; i < m_tempRoute.size() - 1; ++i) {
-        auto end0Pos = m_locations[m_tempRoute[i]].position;
-        auto end1Pos = m_locations[m_tempRoute[i + 1]].position;
-        gf::Line line(end0Pos, end1Pos);
-        line.setColor(gf::Color::White);
-        line.setWidth(3.0f);
-        line.setOutlineThickness(0.5f);
-        line.setOutlineColor(gf::Color::Black);
-        target.draw(line);
-      }
+      drawPath(target, m_tempRoute);
     }
   }
 
@@ -422,7 +418,7 @@ namespace no {
         m_tempRoute.push_back(i);
 
         if (query->isEnded) {
-          gf::Log::debug("End of route: SEND THIS!\n");
+          m_exportPaths.push_back(m_tempRoute);
 
           m_tempRoute.clear();
         }
@@ -458,6 +454,19 @@ namespace no {
     }
 
     return false;
+  }
+
+  void Globe::drawPath(gf::RenderTarget& target, ExportPath &path) {
+    for (std::size_t i = 0; i < path.size() - 1; ++i) {
+      auto end0Pos = m_locations[path[i]].position;
+      auto end1Pos = m_locations[path[i + 1]].position;
+      gf::Line line(end0Pos, end1Pos);
+      line.setColor(gf::Color::White);
+      line.setWidth(3.0f);
+      line.setOutlineThickness(0.5f);
+      line.setOutlineColor(gf::Color::Black);
+      target.draw(line);
+    }
   }
 
 }
