@@ -27,7 +27,8 @@
 #include <gf/Views.h>
 #include <gf/Window.h>
 
-#include <local/BuildMenu.h>
+#include "local/Account.h"
+#include "local/BuildMenu.h"
 #include "local/Globe.h"
 #include "local/Singletons.h"
 #include "local/WorldMap.h"
@@ -122,6 +123,9 @@ int main() {
 
   no::BuildMenu buildMenu;
   hudEntities.addEntity(buildMenu);
+
+  no::Account account;
+  hudEntities.addEntity(account);
 
   // game loop
 
