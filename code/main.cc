@@ -139,20 +139,15 @@ int main() {
       views.processEvent(event);
       adaptor.processEvent(event);
 
-
       switch (event.type) {
         case gf::EventType::MouseMoved:
           buildMenu.pointTo(renderer.mapPixelToCoords(event.mouseCursor.coords, hudView));
           break;
 
         case gf::EventType::MouseButtonPressed:
-          if(event.mouseButton.button == gf::MouseButton::Left) {
-            // buildMenu.getWidgetContainer().pointTo(renderer.mapPixelToCoords(event.mouseButton.coords));
-            // buildMenu.getWidgetContainer().triggerAction();
-          }
-          else if (event.mouseButton.button == gf::MouseButton::Middle) {
+          if (event.mouseButton.button == gf::MouseButton::Middle) {
             gf::Vector2f pos = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
-            std::cout << "{ " << pos.x << ", " << pos.y << " },\n";
+            std::cout << "{ " << pos.x << "f, " << pos.y << "f },\n";
           }
 
           buildMenu.pointTo(renderer.mapPixelToCoords(event.mouseButton.coords, hudView));
