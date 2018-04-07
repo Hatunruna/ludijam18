@@ -23,11 +23,14 @@
 using namespace gf::literals;
 
 namespace no {
+  enum class BuildingType {
+    PetrolPump,
+  }
 
   struct BuildingSelection : public gf::Message {
     static constexpr gf::Id type = "BuildingSelection"_id;
 
-    std::string textureName;
+    BuildingType building;
   };
 
 }

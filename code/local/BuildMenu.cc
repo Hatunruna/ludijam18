@@ -45,6 +45,11 @@ namespace no {
       if (m_state == State::Idle) {
         m_state = State::BuildSelected;
         m_selectedTexture = &m_oilPumpTexture;
+
+        // Send the selection
+        BuildingSelection selection;
+        selection.building = BuildingType::PetrolPump;
+        gMessageManager().sendMessage(&selection);
       }
     });
     m_widgets.addWidget(m_oilPumpWidget);
