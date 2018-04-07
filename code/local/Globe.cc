@@ -405,14 +405,23 @@ namespace no {
 
     static constexpr float WaypointHitbox = 10.0f;
 
+
+
     // Check if the build is valid
     for (std::size_t i = 0; i < m_locations.size(); ++i) {
       auto &location = m_locations[i];
 
       // Create circle to check position
       gf::CircF circle(location.position, WaypointHitbox);
-      auto previousLocation = m_tempRoute.back();
-      if (circle.contains(query->position) && isValidRoute(previousLocation, i)) {
+      std::size_t previousLocation = m_tempRoute.back();
+      if (circle.contains(query->position) && previousLocation == i) {
+        query->isValid = true;
+        query->isEnded = false;
+        m_tempRoute.pop_back();
+
+        break;
+      }
+      else if (circle.contains(query->position) && isValidRoute(previousLocation, i)) {
         query->isValid = true;
         query->isEnded = location.type == LocationType::Consumer;
 
@@ -476,7 +485,7 @@ namespace no {
   }
 
   bool Globe::isValidRoute(std::size_t endPoint0, std::size_t endPoint1) {
-    for (std::size_t i = 0; i < m_locations.size(); ++i) {
+    for (std::size_t i = 0; i < m_routes.size(); ++i) {
       auto &route = m_routes[i];
 
       if ((route.endPoint0 == endPoint0 && route.endPoint1 == endPoint1) || (route.endPoint0 == endPoint1 && route.endPoint1 == endPoint0)) {
