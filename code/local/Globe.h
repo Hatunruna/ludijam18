@@ -23,6 +23,8 @@
 #include <gf/Texture.h>
 #include <gf/View.h>
 
+#include "Messages.h"
+
 namespace no {
 
   class Globe : public gf::Entity {
@@ -30,21 +32,23 @@ namespace no {
     Globe();
 
     virtual void update(gf::Time time) override;
-
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
+    gf::MessageStatus onBuildingQuery(gf::Id id, gf::Message *msg);
+
   private:
-    enum class LocationType {
+    enum class LocationType: int {
       None,
       Consumer,
-      OilSource,
-      UraniumSource,
+      OilSource = 10,
+      UraniumSource = 11,
     };
 
     struct Location {
       std::string name;
       LocationType type;
       gf::Vector2f position;
+      bool isBuild;
     };
 
     struct Route {
@@ -60,6 +64,10 @@ namespace no {
   private:
     std::vector<Location> m_locations;
     std::vector<Route> m_routes;
+
+    // Texture for resources
+    gf::Texture& m_oilPumpTexture;
+    gf::Texture& m_uraniumMiningTexture;
   };
 
 }

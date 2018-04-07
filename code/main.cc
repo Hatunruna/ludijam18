@@ -149,14 +149,19 @@ int main() {
           break;
 
         case gf::EventType::MouseButtonPressed:
+        {
+          auto screenPosition = renderer.mapPixelToCoords(event.mouseButton.coords, hudView);
+          auto worldPosition = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
+
           if (event.mouseButton.button == gf::MouseButton::Middle) {
-            gf::Vector2f pos = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
+            gf::Vector2f pos = worldPosition;
             std::cout << "{ " << pos.x << "f, " << pos.y << "f },\n";
           }
 
-          buildMenu.pointTo(renderer.mapPixelToCoords(event.mouseButton.coords, hudView));
-          buildMenu.pressed(event.mouseButton.button);
+          buildMenu.pointTo(screenPosition);
+          buildMenu.pressed(event.mouseButton.button, worldPosition);
           break;
+        }
 
         default:
           break;

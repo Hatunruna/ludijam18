@@ -23,7 +23,6 @@
 #include <gf/Shapes.h>
 #include <gf/VectorOps.h>
 
-#include "Messages.h"
 #include "Singletons.h"
 
 namespace no {
@@ -34,7 +33,7 @@ namespace no {
   , m_oilPumpWidget(m_oilPumpSprite)
   , m_uraniumMiningTexture(gResourceManager().getTexture("uranium-mining.png"))
   , m_uraniumMiningWidget(m_uraniumMiningSprite)
-  , m_selectedTexture(nullptr)
+  , m_selectedBuilding(BuildingType::PetrolPump)
   {
     m_oilPumpTexture.setSmooth();
 
@@ -44,30 +43,30 @@ namespace no {
     // Widget for pump oil
     m_oilPumpSprite.setTexture(m_oilPumpTexture);
     m_oilPumpWidget.setCallback([this]() {
-      if (m_state == State::Idle) {
-        m_state = State::BuildSelected;
-        m_selectedTexture = &m_oilPumpTexture;
+      assert(m_state == State::Idle);
 
-        // Send the selection
-        BuildingSelection selection;
-        selection.building = BuildingType::PetrolPump;
-        gMessageManager().sendMessage(&selection);
-      }
+      m_state = State::BuildSelected;
+      m_selectedBuilding = BuildingType::PetrolPump;
+
+      // Send the selection
+      // BuildingSelection selection;
+      // selection.building = BuildingType::PetrolPump;
+      // gMessageManager().sendMessage(&selection);
     });
     m_widgets.addWidget(m_oilPumpWidget);
 
     // Widget for uranium
     m_uraniumMiningSprite.setTexture(m_uraniumMiningTexture);
     m_uraniumMiningWidget.setCallback([this]() {
-      if (m_state == State::Idle) {
-        m_state = State::BuildSelected;
-        m_selectedTexture = &m_uraniumMiningTexture;
+      assert(m_state == State::Idle);
+      m_state = State::BuildSelected;
+      m_selectedBuilding = BuildingType::UraniumMining;
 
-        // Send the selection
-        BuildingSelection selection;
-        selection.building = BuildingType::UraniumMining;
-        gMessageManager().sendMessage(&selection);
-      }
+      // Send the selection
+      // BuildingSelection selection;
+      // selection.building = BuildingType::UraniumMining;
+      // gMessageManager().sendMessage(&selection);
+
     });
     m_widgets.addWidget(m_uraniumMiningWidget);
 
@@ -78,9 +77,23 @@ namespace no {
     m_widgets.pointTo(m_mousePosition);
   }
 
-  void BuildMenu::pressed(gf::MouseButton button) {
+  void BuildMenu::pressed(gf::MouseButton button, gf::Vector2f worldPosition) {
     if (button == gf::MouseButton::Left) {
-      m_widgets.triggerAction();
+      if (m_state == State::Idle) {
+        m_widgets.triggerAction();
+      }
+      else if (m_state == State::BuildSelected) {
+        BuildingQuery query;
+        query.building = m_selectedBuilding;
+        query.position = worldPosition;
+        query.isValid = false;
+        gMessageManager().sendMessage(&query);
+
+        if (query.isValid) {
+          gf::Log::debug("SPEND MONEY!\n");
+          m_state = State::Idle;
+        }
+      }
     }
   }
 
@@ -123,11 +136,20 @@ namespace no {
     m_widgets.render(target, states);
 
     if (m_state == State::BuildSelected) {
-      assert(m_selectedTexture != nullptr);
-
       // Drawing the cursor
       gf::Sprite cursor;
-      cursor.setTexture(*m_selectedTexture);
+      switch (m_selectedBuilding) {
+      case BuildingType::PetrolPump:
+        cursor.setTexture(m_oilPumpTexture);
+        break;
+
+      case BuildingType::UraniumMining:
+        cursor.setTexture(m_uraniumMiningTexture);
+        break;
+
+      default:
+        assert(false);
+      }
       cursor.setColor(gf::Color::Opaque(0.5f));
       cursor.setPosition({m_mousePosition.x, m_mousePosition.y});
       cursor.setScale(size.width / WidgetSize);

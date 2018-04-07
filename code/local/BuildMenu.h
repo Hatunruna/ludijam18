@@ -25,6 +25,8 @@
 #include <gf/WidgetContainer.h>
 #include <gf/Widgets.h>
 
+#include "Messages.h"
+
 namespace no {
 
   class BuildMenu : public gf::Entity {
@@ -32,7 +34,7 @@ namespace no {
     BuildMenu();
 
     void pointTo(gf::Vector2f position);
-    void pressed(gf::MouseButton button);
+    void pressed(gf::MouseButton button, gf::Vector2f worldPosition);
 
     gf::WidgetContainer& getWidgetContainer();
     virtual void update(gf::Time time) override;
@@ -63,7 +65,7 @@ namespace no {
 
     // Cursor
     gf::Vector2f m_mousePosition;
-    gf::Texture *m_selectedTexture;
+    BuildingType m_selectedBuilding;
   };
 
 }

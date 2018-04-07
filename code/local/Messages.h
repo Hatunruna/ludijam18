@@ -25,15 +25,23 @@
 using namespace gf::literals;
 
 namespace no {
-  enum class BuildingType {
-    PetrolPump,
-    UraniumMining,
+  enum class BuildingType: int {
+    PetrolPump = 10,
+    UraniumMining = 11,
   };
 
   struct BuildingSelection : public gf::Message {
     static constexpr gf::Id type = "BuildingSelection"_id;
 
     BuildingType building;
+  };
+
+  struct BuildingQuery : public gf::Message {
+    static constexpr gf::Id type = "BuildingQuery"_id;
+
+    BuildingType building;
+    gf::Vector2f position;
+    bool isValid;
   };
 
   struct NewSourceTrouble : public gf::Message {

@@ -17,9 +17,14 @@
  */
 #include "Globe.h"
 
+#include <gf/Circ.h>
 #include <gf/Curves.h>
+#include <gf/Log.h>
 #include <gf/RenderTarget.h>
 #include <gf/Shapes.h>
+#include <gf/Sprite.h>
+
+#include "Singletons.h"
 
 namespace no {
 
@@ -92,6 +97,8 @@ namespace no {
 #endif
 
   Globe::Globe()
+  : m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
+  , m_uraniumMiningTexture(gResourceManager().getTexture("uranium-mining.png"))
   {
 
     /*
@@ -293,11 +300,16 @@ namespace no {
     addRoute(locIndianIndia, locIndianIndonesia);
     addRoute(locIndianIndonesia, oilIndonesia);
 
+
+    // Messages handlers
+    gMessageManager().registerHandler<BuildingQuery>(&Globe::onBuildingQuery, this);
   }
 
   void Globe::update(gf::Time time) {
 
   }
+
+  static constexpr float ResourcesRadius = 15.0f;
 
   void Globe::render(gf::RenderTarget& target, const gf::RenderStates& states) {
     for (auto& route : m_routes) {
@@ -313,50 +325,96 @@ namespace no {
     }
 
     for (auto& loc : m_locations) {
-      gf::CircleShape shape;
+      if (loc.isBuild) {
+        gf::Sprite sprite;
 
-      switch (loc.type) {
-        case LocationType::Consumer:
-          shape.setRadius(40.0f);
-          shape.setColor(gf::Color::Transparent);
-          shape.setOutlineColor(gf::Color::Azure * gf::Color::Opaque(0.7f));
-          shape.setOutlineThickness(10.0f);
-          break;
+        switch (loc.type) {
+          case LocationType::OilSource:
+            sprite.setTexture(m_oilPumpTexture);
+            break;
 
-        case LocationType::OilSource:
-          shape.setRadius(15.0f);
-          shape.setColor(gf::Color::Transparent);
-          shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
-          shape.setOutlineThickness(5.0f);
-          break;
+          case LocationType::UraniumSource:
+            sprite.setTexture(m_uraniumMiningTexture);
+            break;
 
-        case LocationType::UraniumSource:
-          shape.setRadius(15.0f);
-          shape.setColor(gf::Color::Transparent);
-          shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
-          shape.setOutlineThickness(5.0f);
-          break;
+          default:
+            assert(false);
+        }
 
-        case LocationType::None:
-          break;
+        sprite.setScale(50.0f / 256.0f); // WorldSize / SpriteSize
+        sprite.setPosition(loc.position);
+        sprite.setAnchor(gf::Anchor::Center);
+        target.draw(sprite);
       }
+      else {
+        gf::CircleShape shape;
 
-      shape.setPosition(loc.position);
-      shape.setAnchor(gf::Anchor::Center);
-      target.draw(shape);
+        switch (loc.type) {
+          case LocationType::Consumer:
+            shape.setRadius(40.0f);
+            shape.setColor(gf::Color::Transparent);
+            shape.setOutlineColor(gf::Color::Azure * gf::Color::Opaque(0.7f));
+            shape.setOutlineThickness(10.0f);
+            break;
 
-      shape.setRadius(3.0f);
-      shape.setColor(gf::Color::Gray());
-      shape.setOutlineThickness(0.0f);
-      shape.setAnchor(gf::Anchor::Center);
-      target.draw(shape);
+          case LocationType::OilSource:
+            shape.setRadius(ResourcesRadius);
+            shape.setColor(gf::Color::Transparent);
+            shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
+            shape.setOutlineThickness(5.0f);
+            break;
+
+          case LocationType::UraniumSource:
+            shape.setRadius(ResourcesRadius);
+            shape.setColor(gf::Color::Transparent);
+            shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
+            shape.setOutlineThickness(5.0f);
+            break;
+
+          case LocationType::None:
+            break;
+        }
+
+        shape.setPosition(loc.position);
+        shape.setAnchor(gf::Anchor::Center);
+        target.draw(shape);
+
+        shape.setRadius(3.0f);
+        shape.setColor(gf::Color::Gray());
+        shape.setOutlineThickness(0.0f);
+        shape.setAnchor(gf::Anchor::Center);
+        target.draw(shape);
+      }
     }
 
   }
 
+  gf::MessageStatus Globe::onBuildingQuery(gf::Id id, gf::Message *msg) {
+    assert(id == BuildingQuery::type);
+    BuildingQuery *query = static_cast<BuildingQuery*>(msg);
+
+    // Check if the build is valid
+    for (auto &location: m_locations) {
+      // Dirty cast
+      int locationType = static_cast<int>(location.type);
+      int buildingType = static_cast<int>(query->building);
+
+      // Create circle to check position
+      gf::CircF circle(location.position, ResourcesRadius);
+      if (locationType == buildingType && !location.isBuild && circle.contains(query->position)) {
+        location.isBuild = true;
+        query->isValid = true;
+
+        break;
+      }
+    }
+
+    return gf::MessageStatus::Keep;
+  }
+
   std::size_t Globe::addLocation(std::string name, LocationType type, gf::Vector2f pos) {
     std::size_t id = m_locations.size();
-    m_locations.push_back({ std::move(name), type, pos });
+    m_locations.push_back({ std::move(name), type, pos, false });
     return id;
   }
 
