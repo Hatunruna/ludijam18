@@ -137,7 +137,7 @@ int main() {
 
       if (event.type == gf::EventType::MouseButtonPressed && event.mouseButton.button == gf::MouseButton::Middle) {
         gf::Vector2f pos = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
-        std::cout << "{ " << pos.x << ", " << pos.y << " },\n";
+        std::cout << "{ " << pos.x << "f, " << pos.y << "f },\n";
       }
 
     }

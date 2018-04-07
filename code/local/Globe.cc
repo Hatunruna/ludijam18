@@ -39,7 +39,7 @@ namespace no {
      */
 
     { LocationType::Consumer, { -44.7143f, -270.833f } }, // Europe
-    { LocationType::Consumer, { 137.001f, -345.486f } }, // Russia
+    { LocationType::Consumer, { 156.971f, -306.424f } }, // Russia
 
     { LocationType::Consumer, { -545.688f, -200.521f } }, // US, East Coast
     { LocationType::Consumer, { -807.028f, -222.222f } }, // US, West Coast
@@ -52,7 +52,7 @@ namespace no {
     { LocationType::Consumer, { 754.319f, -197.049f } }, // Japan-Korea
     { LocationType::Consumer, { 649.008f, -133.681f } }, // China
 
-    { LocationType::Consumer, { 817.7f, 301.215f } }, // Australia
+    { LocationType::Consumer, { 838.538f, 270.833f } }, // Australia
 
     /*
      * oil sources
@@ -92,9 +92,9 @@ namespace no {
 
     { LocationType::UraniumSource, { 352.071f, -250.868f } }, // Kazakhstan
     { LocationType::UraniumSource, { -497.935f, -286.458f } }, // Canada
-    { LocationType::UraniumSource, { 775.157f, 292.535f } }, // Australia
+    { LocationType::UraniumSource, { 766.474f, 296.007f } }, // Australia
     { LocationType::UraniumSource, { -20.1503f, -46.007f } }, // Niger
-    { LocationType::UraniumSource, { 117.9f, -350.694f } }, // Russia
+    { LocationType::UraniumSource, { 117.032f, -358.507f } }, // Russia
     { LocationType::UraniumSource, { 28.4711f, 214.41f } }, // Namibia
 
   };
