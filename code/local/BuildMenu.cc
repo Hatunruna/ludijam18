@@ -43,8 +43,6 @@ namespace no {
     // Widget for pump oil
     m_oilPumpSprite.setTexture(m_oilPumpTexture);
     m_oilPumpWidget.setCallback([this]() {
-      assert(m_state == State::Idle);
-
       m_state = State::BuildSelected;
       m_selectedBuilding = BuildingType::PetrolPump;
     });
@@ -53,7 +51,6 @@ namespace no {
     // Widget for uranium
     m_uraniumMiningSprite.setTexture(m_uraniumMiningTexture);
     m_uraniumMiningWidget.setCallback([this]() {
-      assert(m_state == State::Idle);
       m_state = State::BuildSelected;
       m_selectedBuilding = BuildingType::UraniumMining;
 
@@ -82,6 +79,9 @@ namespace no {
         if (query.isValid) {
           gf::Log::debug("SPEND MONEY!\n");
           m_state = State::Idle;
+        }
+        else { // To allow change building without select and build in one clic
+          m_widgets.triggerAction();
         }
       }
     }
