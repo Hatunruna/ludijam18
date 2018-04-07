@@ -46,6 +46,7 @@ namespace no {
       BuildSelected,
       RouteMakerSource,
       RouteMakerPipe,
+      InfoTarget,
     };
 
   private:
@@ -67,6 +68,11 @@ namespace no {
     gf::Texture& m_routeTexture;
     gf::Sprite m_routeSprite;
     gf::SpriteWidget m_routeWidget;
+
+    // Info
+    gf::Texture& m_infoTexture;
+    gf::Sprite m_infoSprite;
+    gf::SpriteWidget m_infoWidget;
 
     gf::WidgetContainer m_widgets;
 

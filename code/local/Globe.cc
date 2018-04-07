@@ -257,6 +257,7 @@ namespace no {
     gMessageManager().registerHandler<BuildingQuery>(&Globe::onBuildingQuery, this);
     gMessageManager().registerHandler<RouteStartQuery>(&Globe::onRouteStartQuery, this);
     gMessageManager().registerHandler<RoutePipeQuery>(&Globe::onRoutePipeQuery, this);
+    gMessageManager().registerHandler<InfoQuery>(&Globe::onInfoQuery, this);
   }
 
   void Globe::update(gf::Time time) {
@@ -422,6 +423,36 @@ namespace no {
 
           m_tempRoute.clear();
         }
+
+        break;
+      }
+    }
+
+    return gf::MessageStatus::Keep;
+  }
+
+  gf::MessageStatus Globe::onInfoQuery(gf::Id id, gf::Message *msg) {
+    assert(id == InfoQuery::type);
+    InfoQuery *query = static_cast<InfoQuery*>(msg);
+
+    m_tempRoute.clear();
+
+    static constexpr float ResourcesHitbox = ResourcesRadius;
+
+    // Check if the build is valid
+    for (std::size_t i = 0; i < m_locations.size(); ++i) {
+      auto &location = m_locations[i];
+
+      // Create circle to check position
+      gf::CircF circle(location.position, ResourcesHitbox);
+
+      if (circle.contains(query->position)) {
+        query->isValid = true;
+
+        gf::Log::debug("Info of : %s\n", m_locations[i].name.c_str());
+        gf::Log::debug("Display something\n");
+        gf::Log::debug("DO IT! JUST DO IT!\n");
+        gf::Log::debug("\n");
 
         break;
       }

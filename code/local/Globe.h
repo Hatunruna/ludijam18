@@ -39,6 +39,7 @@ namespace no {
     gf::MessageStatus onBuildingQuery(gf::Id id, gf::Message *msg);
     gf::MessageStatus onRouteStartQuery(gf::Id id, gf::Message *msg);
     gf::MessageStatus onRoutePipeQuery(gf::Id id, gf::Message *msg);
+    gf::MessageStatus onInfoQuery(gf::Id id, gf::Message *msg);
 
   private:
     enum class LocationType: int {

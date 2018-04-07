@@ -25,8 +25,10 @@
 using namespace gf::literals;
 
 namespace no {
+  // TODO: Rename this...
   enum class BuildingType: int {
     Route,
+    InfoTarget,
     PetrolPump = 10,
     UraniumMining = 11,
   };
@@ -52,6 +54,13 @@ namespace no {
     gf::Vector2f position;
     bool isValid;
     bool isEnded;
+  };
+
+  struct InfoQuery : public gf::Message {
+    static constexpr gf::Id type = "InfoQuery"_id;
+
+    gf::Vector2f position;
+    bool isValid;
   };
 
   struct NewSourceTrouble : public gf::Message {

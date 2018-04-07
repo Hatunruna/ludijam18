@@ -36,6 +36,8 @@ namespace no {
   , m_uraniumMiningWidget(m_uraniumMiningSprite)
   , m_routeTexture(gResourceManager().getTexture("route.png"))
   , m_routeWidget(m_routeSprite)
+  , m_infoTexture(gResourceManager().getTexture("info.png"))
+  , m_infoWidget(m_infoSprite)
   , m_selectedBuilding(BuildingType::PetrolPump)
   {
     m_oilPumpTexture.setSmooth();
@@ -69,6 +71,14 @@ namespace no {
     });
     m_widgets.addWidget(m_routeWidget);
 
+    // Widget for info
+    m_infoSprite.setTexture(m_infoTexture);
+    m_infoWidget.setCallback([this]() {
+      m_state = State::InfoTarget;
+      m_selectedBuilding = BuildingType::InfoTarget;
+
+    });
+    m_widgets.addWidget(m_infoWidget);
   }
 
   void BuildMenu::pointTo(gf::Vector2f position) {
@@ -136,6 +146,22 @@ namespace no {
       }
       break;
 
+      case State::InfoTarget:
+      {
+        InfoQuery query;
+        query.position = worldPosition;
+        query.isValid = false;
+        gMessageManager().sendMessage(&query);
+
+        if (query.isValid) {
+          m_state = State::Idle;
+        }
+        else { // To allow change building without select and build in one clic
+          m_widgets.triggerAction();
+        }
+      }
+      break;
+
       default:
         assert(false);
       }
@@ -165,10 +191,16 @@ namespace no {
 
     target.draw(rect, states);
 
-    // Pump oil
+    // Info
     auto position = coordinates.getRelativePoint({ MenuPadding, MenuPadding });
     size = coordinates.getRelativeSize({ MenuRelativeSize.width - MenuPadding * 2, MenuRelativeSize.height });
     auto padding = coordinates.getRelativeSize({ MenuPadding, MenuPadding });
+    m_infoSprite.setScale(size.width / WidgetSize);
+    m_infoSprite.setPosition(position);
+
+    // Pump oil
+    position.y += size.width + padding.width;
+    size = coordinates.getRelativeSize({ MenuRelativeSize.width - MenuPadding * 2, MenuRelativeSize.height });
     m_oilPumpSprite.setScale(size.width / WidgetSize);
     m_oilPumpSprite.setPosition(position);
 
@@ -186,7 +218,7 @@ namespace no {
 
     m_widgets.render(target, states);
 
-    if (m_state == State::BuildSelected || m_state == State::RouteMakerSource) {
+    if (m_state == State::BuildSelected || m_state == State::RouteMakerSource || m_state == State::InfoTarget) {
       // Drawing the cursor
       gf::Sprite cursor;
       switch (m_selectedBuilding) {
@@ -200,6 +232,10 @@ namespace no {
 
       case BuildingType::Route:
         cursor.setTexture(m_routeTexture);
+        break;
+
+      case BuildingType::InfoTarget:
+        cursor.setTexture(m_infoTexture);
         break;
 
       default:
