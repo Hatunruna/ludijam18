@@ -28,74 +28,6 @@
 
 namespace no {
 
-#if 0
-  static constexpr Location Locations[] = {
-    /*
-     * consumers
-     */
-
-    { LocationType::Consumer, { -44.7143f, -270.833f } }, // Europe
-    { LocationType::Consumer, { 156.971f, -306.424f } }, // Russia
-
-    { LocationType::Consumer, { -545.688f, -200.521f } }, // US, East Coast
-    { LocationType::Consumer, { -807.028f, -222.222f } }, // US, West Coast
-
-    { LocationType::Consumer, { -327.507f, 141.493f } }, // Brazil
-
-    { LocationType::Consumer, { 75.3562f, 283.854f } }, // South Africa
-
-    { LocationType::Consumer, { 450.797f, -89.618f } }, // India
-    { LocationType::Consumer, { 754.319f, -197.049f } }, // Japan-Korea
-    { LocationType::Consumer, { 649.008f, -133.681f } }, // China
-
-    { LocationType::Consumer, { 838.538f, 270.833f } }, // Australia
-
-    /*
-     * oil sources
-     */
-
-    { LocationType::OilSource, { 227.913f, -144.097f } }, // Koweit
-    { LocationType::OilSource, { 256.565f, -105.903f } }, // Saudi Arabia
-    { LocationType::OilSource, { 194.92f, -197.917f } }, // Irak
-
-    { LocationType::OilSource, { -56.0014f, -140.625f } }, // Algeria
-    { LocationType::OilSource, { -25.613f, 36.4583f } }, // Nigeria
-
-    { LocationType::OilSource, { -57.7379f, -371.528f } }, // North Sea
-
-    { LocationType::OilSource, { -788.18f, -410.799f } }, // Alaska
-    { LocationType::OilSource, { -698.752f, -323.993f } }, // Canada
-    { LocationType::OilSource, { -669.232f, -80.0694f } }, // Mexico
-    { LocationType::OilSource, { -682.255f, -157.326f } }, // Texas
-
-    { LocationType::OilSource, { -505.134f, -8.02088f } }, // Venezuela
-    { LocationType::OilSource, { -599.772f, 72.7083f } }, // Ecuador
-    { LocationType::OilSource, { -459.986f, 380.868f } }, // Argentina
-
-    { LocationType::OilSource, { 243.288f, -262.361f } }, // Caspian Sea
-    { LocationType::OilSource, { 206.822f, -354.375f } }, // Oural
-    { LocationType::OilSource, { 331.848f, -389.097f } }, // Siberia
-
-    { LocationType::OilSource, { 402.175f, -82.6735f } }, // India
-    { LocationType::OilSource, { 663.515f, -251.944f } }, // China-East
-    { LocationType::OilSource, { 447.324f, -232.847f } }, // China-West
-
-    { LocationType::OilSource, { 601.87f, 84.8611f } }, // Indonesia
-
-    /*
-     * uranium sources
-     */
-
-    { LocationType::UraniumSource, { 352.071f, -250.868f } }, // Kazakhstan
-    { LocationType::UraniumSource, { -497.935f, -286.458f } }, // Canada
-    { LocationType::UraniumSource, { 766.474f, 296.007f } }, // Australia
-    { LocationType::UraniumSource, { -20.1503f, -46.007f } }, // Niger
-    { LocationType::UraniumSource, { 117.032f, -358.507f } }, // Russia
-    { LocationType::UraniumSource, { 28.4711f, 214.41f } }, // Namibia
-
-  };
-#endif
-
   Globe::Globe()
   : m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
   , m_uraniumMiningTexture(gResourceManager().getTexture("uranium-mining.png"))
@@ -153,10 +85,12 @@ namespace no {
     auto urNamiba = addLocation("Namibia", LocationType::UraniumSource, { 28.4711f, 214.41f });
 
     /*
-     * pipelines
+     * route points
      */
 
-    auto locUsaCentral = addAnonymousLocation({ -653.964f, -202.917f });
+    auto locUsaCentral = addAnonymousLocation({ -688.948f, -215.938f });
+    auto locCanada = addAnonymousLocation({ -446.455f, -253.264f });
+
     auto locAlgeria = addAnonymousLocation({ -44.7142f, -194.444f });
     auto locMediterraneanSeaWest = addAnonymousLocation({ -3.03857f, -216.146f });
     auto locMediterraneanSeaCenter = addAnonymousLocation({ 40.3731f, -183.16f });
@@ -183,7 +117,7 @@ namespace no {
     auto locAtlanticGibraltar = addAnonymousLocation({ -178.796f, -184.166f });
     auto locAtlanticAzores = addAnonymousLocation({ -288.428f, -66.5509f });
     auto locAtlanticEquator = addAnonymousLocation({ -181.028f, 110.243f });
-    auto locAtlanticSouth = addAnonymousLocation({ -162.795f, 298.611f });
+    auto locAtlanticSouth = addAnonymousLocation({ -207.778f, 238.518f });
     auto locAtlanticArgentina = addAnonymousLocation({ -307.407f, 388.518f });
     auto locCapeHorn = addAnonymousLocation({ -453.952f, 498.472f });
 
@@ -200,14 +134,20 @@ namespace no {
 
     auto locTurkey = addAnonymousLocation({ 105.491f, -219.618f });
 
-
+    auto locJavaSea = addAnonymousLocation({ 629.293f, 64.2361f });
+    auto locChinaSea = addAnonymousLocation({ 698.498f, -68.5764f });
+    auto locCoralSea = addAnonymousLocation({ 856.771f, 149.306f });
+    auto locAustralia = addAnonymousLocation({ 836.802f, 220.486f });
+    auto locBenin = addAnonymousLocation({ -61.7423f, 23.7615f });
 
 
     addRoute(locUsaCentral, oilTexas);
     addRoute(locUsaCentral, consUsaEastCoast);
     addRoute(locUsaCentral, consUsaWestCoast);
-
-
+    addRoute(locCanada, urCanada);
+    addRoute(locCanada, locAtlanticGibraltar);
+    addRoute(urCanada, consUsaEastCoast);
+    addRoute(oilCanada, locUsaCentral);
 
     addRoute(locRussiaWest, consRussia);
     addRoute(locRussiaWest, oilUral);
@@ -216,6 +156,7 @@ namespace no {
     addRoute(locRussiaWest, locRussiaUral);
     addRoute(oilCaspianSea, locRussiaUral);
     addRoute(locRussiaWest, consEurope);
+    addRoute(locRussiaUral, urKazakhstan);
 
     addRoute(locRussiaCentral, locRussiaUral);
     addRoute(oilChinaWest, locRussiaCentral);
@@ -249,9 +190,6 @@ namespace no {
     addRoute(oilMexico, locMexicoGulf);
     addRoute(locMexicoGulf, locCarribeanSea);
     addRoute(oilEcuador, locPanamaSouth);
-
-    addRoute(oilCanada, consUsaWestCoast);
-    addRoute(oilCanada, consUsaEastCoast);
 
     addRoute(oilNothSea, locAtlanticBrittany);
     addRoute(oilNothSea, consEurope);
@@ -300,6 +238,20 @@ namespace no {
     addRoute(locIndianIndia, locIndianIndonesia);
     addRoute(locIndianIndonesia, oilIndonesia);
 
+    addRoute(locIndianIndonesia, locIndianMadagascar);
+    addRoute(locJavaSea, locIndianIndonesia);
+    addRoute(locJavaSea, locChinaSea);
+    addRoute(locChinaSea, consChina);
+    addRoute(locChinaSea, consJapan);
+    addRoute(locChinaSea, locChinaEast);
+    addRoute(locIndianIndonesia, locCoralSea);
+
+    addRoute(locCoralSea, locAustralia);
+    addRoute(locAustralia, consAustralia);
+    addRoute(locAustralia, urAustralia);
+
+    addRoute(locBenin, urNiger);
+    addRoute(locBenin, locAtlanticEquator);
 
     // Messages handlers
     gMessageManager().registerHandler<BuildingQuery>(&Globe::onBuildingQuery, this);
