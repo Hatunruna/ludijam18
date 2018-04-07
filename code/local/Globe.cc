@@ -149,34 +149,50 @@ namespace no {
      * pipelines
      */
 
-    auto locUsaCentral = addLocation("", LocationType::None, { -653.964f, -202.917f });
-    auto locAlgeria = addLocation("", LocationType::None, { -44.7142f, -194.444f });
-    auto locMediterraneanSeaWest = addLocation("", LocationType::None, { 40.3731f, -183.16f });
-    auto locMediterraneanSeaEast = addLocation("", LocationType::None, { 115.91f, -177.083f });
-    auto locRussiaCentral = addLocation("", LocationType::None, { 380.108f, -349.826f });
-    auto locChinaCentral = addLocation("", LocationType::None, { 601.255f, -182.292f });
-    auto locChinaEast = addLocation("", LocationType::None, { 674.933f, -192.882f });
-    auto locRussiaWest = addLocation("", LocationType::None, { 148.903f, -326.389f });
-    auto locRussiaUral = addLocation("", LocationType::None, { 226.176f, -310.764f });
+    auto locUsaCentral = addAnonymousLocation({ -653.964f, -202.917f });
+    auto locAlgeria = addAnonymousLocation({ -44.7142f, -194.444f });
+    auto locMediterraneanSeaWest = addAnonymousLocation({ -3.03857f, -216.146f });
+    auto locMediterraneanSeaCenter = addAnonymousLocation({ 40.3731f, -183.16f });
+    auto locMediterraneanSeaEast = addAnonymousLocation({ 115.91f, -177.083f });
 
-    auto locAlaska = addLocation("", LocationType::None, { -844.616f, -355.903f });
-    auto locPacificEast = addLocation("", LocationType::None, { -866.322f, -232.639f });
-    auto locPacificCalifornia = addLocation("", LocationType::None, { -820.92f, -84.2014f });
-    auto locPacificSouth = addLocation("", LocationType::None, { -693.542f, 324.861f });
+    auto locRussiaCentral = addAnonymousLocation({ 380.108f, -349.826f });
+    auto locChinaCentral = addAnonymousLocation({ 601.255f, -182.292f });
+    auto locChinaEast = addAnonymousLocation({ 674.933f, -192.882f });
+    auto locRussiaWest = addAnonymousLocation({ 148.903f, -326.389f });
+    auto locRussiaUral = addAnonymousLocation({ 226.176f, -310.764f });
 
-    auto locPanamaSouth = addLocation("", LocationType::None, { -648.394f, 24.3054f });
-    auto locPanamaNorth = addLocation("", LocationType::None, { -570.252f, -36.4585f });
-    auto locCarribeanSea = addLocation("", LocationType::None, { -530.313f, -120.66f });
-    auto locMexicoGulf = addLocation("", LocationType::None, { -636.841f, -113.021f });
+    auto locAlaska = addAnonymousLocation({ -844.616f, -355.903f });
+    auto locPacificEast = addAnonymousLocation({ -866.322f, -232.639f });
+    auto locPacificCalifornia = addAnonymousLocation({ -820.92f, -84.2014f });
+    auto locPacificSouth = addAnonymousLocation({ -693.542f, 324.861f });
 
-    auto locAtlanticWest = addLocation("", LocationType::None, { -468.415f, -59.8958f });
-    auto locAtlanticBrittany = addLocation("", LocationType::None, { -167.136f, -289.062f });
-    auto locAtlanticGibraltar = addLocation("", LocationType::None, { -178.796f, -184.166f });
-    auto locAtlanticAzores = addLocation("", LocationType::None, { -288.428f, -66.5509f });
-    auto locAtlanticEquator = addLocation("", LocationType::None, { -181.028f, 110.243f });
-    auto locAtlanticSouth = addLocation("", LocationType::None, { -162.795f, 298.611f });
-    auto locAtlanticArgentina = addLocation("", LocationType::None, { -307.407f, 388.518f });
-    auto locCapeHorn = addLocation("", LocationType::None, { -453.952f, 498.472f });
+    auto locPanamaSouth = addAnonymousLocation({ -648.394f, 24.3054f });
+    auto locPanamaNorth = addAnonymousLocation({ -570.252f, -36.4585f });
+    auto locCarribeanSea = addAnonymousLocation({ -530.313f, -120.66f });
+    auto locMexicoGulf = addAnonymousLocation({ -636.841f, -113.021f });
+
+    auto locAtlanticWest = addAnonymousLocation({ -468.415f, -59.8958f });
+    auto locAtlanticBrittany = addAnonymousLocation({ -167.136f, -289.062f });
+    auto locAtlanticGibraltar = addAnonymousLocation({ -178.796f, -184.166f });
+    auto locAtlanticAzores = addAnonymousLocation({ -288.428f, -66.5509f });
+    auto locAtlanticEquator = addAnonymousLocation({ -181.028f, 110.243f });
+    auto locAtlanticSouth = addAnonymousLocation({ -162.795f, 298.611f });
+    auto locAtlanticArgentina = addAnonymousLocation({ -307.407f, 388.518f });
+    auto locCapeHorn = addAnonymousLocation({ -453.952f, 498.472f });
+
+    auto locCapeGoodHope = addAnonymousLocation({ 63.5184f, 384.722f });
+    auto locIndianMadagascar = addAnonymousLocation({ 314.737f, 243.056f });
+    auto locIndianSomalia = addAnonymousLocation({ 284.348f, -22.5694f });
+    auto locIndianIndia = addAnonymousLocation({ 387.669f, 10.4167f });
+    auto locIndianIndonesia = addAnonymousLocation({ 603.86f, 131.944f });
+
+    auto locRedSea = addAnonymousLocation({ 167.136f, -105.903f });
+    auto locAdenGulf = addAnonymousLocation({ 213.153f, -17.3611f });
+    auto locPersicGulf = addAnonymousLocation({ 265.247f, -119.792f });
+    auto locOmanGulf = addAnonymousLocation({ 328.628f, -98.0903f });
+
+    auto locTurkey = addAnonymousLocation({ 105.491f, -219.618f });
+
 
 
 
@@ -203,10 +219,11 @@ namespace no {
     addRoute(locChinaEast, consJapan);
 
     addRoute(oilAlgeria, locAlgeria);
-    addRoute(locAlgeria, consEurope);
+    addRoute(locAlgeria, locMediterraneanSeaWest);
 
     addRoute(locMediterraneanSeaWest, consEurope);
-    addRoute(locMediterraneanSeaEast, locMediterraneanSeaWest);
+    addRoute(locMediterraneanSeaCenter, locMediterraneanSeaEast);
+    addRoute(locMediterraneanSeaCenter, locMediterraneanSeaWest);
 
     addRoute(oilAlaska, locAlaska);
     addRoute(locAlaska, locPacificEast);
@@ -244,9 +261,37 @@ namespace no {
     addRoute(locAtlanticSouth, locAtlanticArgentina);
     addRoute(locAtlanticArgentina, oilArgentina);
     addRoute(locAtlanticArgentina, locCapeHorn);
+    addRoute(locAtlanticSouth, locCapeGoodHope);
 
     addRoute(locCapeHorn, locPacificSouth);
     addRoute(locPacificSouth, oilEcuador);
+
+    addRoute(locCapeGoodHope, consSouthAfrica);
+    addRoute(locCapeGoodHope, locIndianMadagascar);
+    addRoute(locIndianMadagascar, locIndianSomalia);
+
+    addRoute(locIndianSomalia, locAdenGulf);
+    addRoute(locAdenGulf, locRedSea);
+    addRoute(locRedSea, locMediterraneanSeaEast);
+    addRoute(locRedSea, oilSaudi);
+
+    addRoute(oilKuweit, oilIraq);
+    addRoute(oilIraq, locTurkey);
+
+    addRoute(locTurkey, consRussia);
+    addRoute(locTurkey, consEurope);
+    addRoute(locTurkey, locMediterraneanSeaCenter);
+
+    addRoute(oilKuweit, locPersicGulf);
+    addRoute(oilSaudi, locPersicGulf);
+    addRoute(locPersicGulf, locOmanGulf);
+    addRoute(locOmanGulf, locIndianSomalia);
+
+    addRoute(locOmanGulf, locIndianIndia);
+    addRoute(oilIndia, locIndianIndia);
+    addRoute(oilIndia, consIndia);
+    addRoute(locIndianIndia, locIndianIndonesia);
+    addRoute(locIndianIndonesia, oilIndonesia);
 
   }
 
@@ -313,6 +358,10 @@ namespace no {
     std::size_t id = m_locations.size();
     m_locations.push_back({ std::move(name), type, pos });
     return id;
+  }
+
+  std::size_t Globe::addAnonymousLocation(gf::Vector2f pos) {
+    return addLocation("", LocationType::None, pos);
   }
 
   void Globe::addRoute(std::size_t endPoint0, std::size_t endPoint1) {

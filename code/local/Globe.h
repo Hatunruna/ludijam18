@@ -54,6 +54,7 @@ namespace no {
 
   private:
     std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
+    std::size_t addAnonymousLocation(gf::Vector2f pos);
     void addRoute(std::size_t endPoint0, std::size_t endPoint1);
 
   private:
