@@ -15,30 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef NO_INFO_PANEL_H
-#define NO_INFO_PANEL_H
 
-#include <gf/Entity.h>
-#include <gf/Font.h>
-
-#include "Messages.h"
+#ifndef NO_GAME_CONSTANTS
+#define NO_GAME_CONSTANTS
 
 namespace no {
 
-  class Account: public gf::Entity {
-  public:
-    Account();
-
-    virtual void update(gf::Time time) override;
-    virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
-
-    gf::MessageStatus onBalanceOperation(gf::Id id, gf::Message *msg);
-
-  private:
-    float m_balance;
-    gf::Font &m_font;
-  };
+  static constexpr float BaseValueOilPump = 100.0f;
 
 }
 
-#endif // NO_INFO_PANEL_H
+#endif

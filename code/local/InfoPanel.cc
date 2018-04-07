@@ -27,9 +27,10 @@
 namespace no {
 
   Account::Account()
-  : m_balance(5000)
+  : m_balance(5000.0f)
   , m_font(gResourceManager().getFont("liberation-sans.ttf")) {
-
+    // Messages handlers
+    gMessageManager().registerHandler<BalanceOperation>(&Account::onBalanceOperation, this);
   }
 
   void Account::update(gf::Time time) {
@@ -48,6 +49,15 @@ namespace no {
     text.setAnchor(gf::Anchor::TopRight);
 
     target.draw(text, states);
+  }
+
+  gf::MessageStatus Account::onBalanceOperation(gf::Id id, gf::Message *msg) {
+    assert(id == BalanceOperation::type);
+    BalanceOperation *operation = static_cast<BalanceOperation*>(msg);
+
+    m_balance += operation->value;
+
+    return gf::MessageStatus::Keep;
   }
 
 }

@@ -75,6 +75,12 @@ namespace no {
     RouteTrouble trouble;
   };
 
+  struct BalanceOperation : public gf::Message {
+    static constexpr gf::Id type = "BalanceOperation"_id;
+
+    float value;
+  };
+
 }
 
 #endif // NO_MESSAGES_H

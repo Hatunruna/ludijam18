@@ -24,6 +24,7 @@
 #include <gf/Shapes.h>
 #include <gf/VectorOps.h>
 
+#include "GameConstants.h"
 #include "Singletons.h"
 
 namespace no {
@@ -102,7 +103,10 @@ namespace no {
           gMessageManager().sendMessage(&query);
 
           if (query.isValid) {
-            gf::Log::debug("Building construct: SPEND MONEY!\n");
+            BalanceOperation operation;
+            operation.value = -BaseValueOilPump;
+            gMessageManager().sendMessage(&operation);
+
             m_state = State::Idle;
           }
           else { // To allow change building without select and build in one clic
