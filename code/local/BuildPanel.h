@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef NO_BUILD_MENU_H
-#define NO_BUILD_MENU_H
+#ifndef NO_BUILD_PANEL_H
+#define NO_BUILD_PANEL_H
 
 #include <gf/Entity.h>
 #include <gf/Event.h>
@@ -77,4 +77,4 @@ namespace no {
 
 }
 
-#endif // NO_BUILD_MENU_H
+#endif // NO_BUILD_PANEL_H

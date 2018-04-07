@@ -27,9 +27,9 @@
 #include <gf/Views.h>
 #include <gf/Window.h>
 
-#include "local/Account.h"
-#include "local/BuildMenu.h"
+#include "local/BuildPanel.h"
 #include "local/Globe.h"
+#include "local/InfoPanel.h"
 #include "local/Singletons.h"
 #include "local/WorldMap.h"
 

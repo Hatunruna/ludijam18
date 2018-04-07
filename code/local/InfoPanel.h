@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef NO_ACCOUNT_H
-#define NO_ACCOUNT_H
+#ifndef NO_INFO_PANEL_H
+#define NO_INFO_PANEL_H
 
 #include <gf/Entity.h>
 #include <gf/Font.h>
@@ -37,4 +37,4 @@ namespace no {
 
 }
 
-#endif // NO_ACCOUNT_H
+#endif // NO_INFO_PANEL_H

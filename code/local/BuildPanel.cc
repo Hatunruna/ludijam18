@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "BuildMenu.h"
+#include "BuildPanel.h"
 
 #include <gf/Coordinates.h>
 #include <gf/Curves.h>

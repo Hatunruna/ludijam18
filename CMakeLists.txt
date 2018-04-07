@@ -17,9 +17,9 @@ endif()
 
 add_executable(no-inc
   code/main.cc
-  code/local/Account.cc
-  code/local/BuildMenu.cc
+  code/local/BuildPanel.cc
   code/local/Globe.cc
+  code/local/InfoPanel.cc
   code/local/Singletons.cc
   code/local/Troubles.cc
   code/local/WorldMap.cc
