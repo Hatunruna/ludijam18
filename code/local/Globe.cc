@@ -118,7 +118,7 @@ namespace no {
     auto oilIraq = addLocation("Iraq", LocationType::OilSource, { 194.92f, -197.917f });
     auto oilAlgeria = addLocation("Algeria", LocationType::OilSource, { -56.0014f, -140.625f });
     auto oilNigeria = addLocation("Nigeria", LocationType::OilSource, { -25.613f, 36.4583f });
-    auto oilNothSea = addLocation("North Sea", LocationType::OilSource, { -57.7379f, -371.528f });
+    auto oilNothSea = addLocation("North Sea", LocationType::OilSource, { -73.3661f, -371.528f });
     auto oilAlaska = addLocation("Alaska", LocationType::OilSource, { -788.18f, -410.799f });
     auto oilCanada = addLocation("Canada", LocationType::OilSource, { -698.752f, -323.993f });
     auto oilMexico = addLocation("Mexico", LocationType::OilSource, { -669.232f, -80.0694f });
@@ -150,15 +150,104 @@ namespace no {
      */
 
     auto locUsaCentral = addLocation("", LocationType::None, { -653.964f, -202.917f });
+    auto locAlgeria = addLocation("", LocationType::None, { -44.7142f, -194.444f });
+    auto locMediterraneanSeaWest = addLocation("", LocationType::None, { 40.3731f, -183.16f });
+    auto locMediterraneanSeaEast = addLocation("", LocationType::None, { 115.91f, -177.083f });
+    auto locRussiaCentral = addLocation("", LocationType::None, { 380.108f, -349.826f });
+    auto locChinaCentral = addLocation("", LocationType::None, { 601.255f, -182.292f });
+    auto locChinaEast = addLocation("", LocationType::None, { 674.933f, -192.882f });
+    auto locRussiaWest = addLocation("", LocationType::None, { 148.903f, -326.389f });
+    auto locRussiaUral = addLocation("", LocationType::None, { 226.176f, -310.764f });
+
+    auto locAlaska = addLocation("", LocationType::None, { -844.616f, -355.903f });
+    auto locPacificEast = addLocation("", LocationType::None, { -866.322f, -232.639f });
+    auto locPacificCalifornia = addLocation("", LocationType::None, { -820.92f, -84.2014f });
+    auto locPacificSouth = addLocation("", LocationType::None, { -693.542f, 324.861f });
+
+    auto locPanamaSouth = addLocation("", LocationType::None, { -648.394f, 24.3054f });
+    auto locPanamaNorth = addLocation("", LocationType::None, { -570.252f, -36.4585f });
+    auto locCarribeanSea = addLocation("", LocationType::None, { -530.313f, -120.66f });
+    auto locMexicoGulf = addLocation("", LocationType::None, { -636.841f, -113.021f });
+
+    auto locAtlanticWest = addLocation("", LocationType::None, { -468.415f, -59.8958f });
+    auto locAtlanticBrittany = addLocation("", LocationType::None, { -167.136f, -289.062f });
+    auto locAtlanticGibraltar = addLocation("", LocationType::None, { -178.796f, -184.166f });
+    auto locAtlanticAzores = addLocation("", LocationType::None, { -288.428f, -66.5509f });
+    auto locAtlanticEquator = addLocation("", LocationType::None, { -181.028f, 110.243f });
+    auto locAtlanticSouth = addLocation("", LocationType::None, { -162.795f, 298.611f });
+    auto locAtlanticArgentina = addLocation("", LocationType::None, { -307.407f, 388.518f });
+    auto locCapeHorn = addLocation("", LocationType::None, { -453.952f, 498.472f });
+
 
 
     addRoute(locUsaCentral, oilTexas);
     addRoute(locUsaCentral, consUsaEastCoast);
     addRoute(locUsaCentral, consUsaWestCoast);
 
-    addRoute(consRussia, oilUral);
+
+
+    addRoute(locRussiaWest, consRussia);
+    addRoute(locRussiaWest, oilUral);
     addRoute(oilUral, oilSiberia);
-    addRoute(consRussia, urRussia);
+    addRoute(locRussiaWest, urRussia);
+    addRoute(locRussiaWest, locRussiaUral);
+    addRoute(oilCaspianSea, locRussiaUral);
+    addRoute(locRussiaWest, consEurope);
+
+    addRoute(locRussiaCentral, locRussiaUral);
+    addRoute(oilChinaWest, locRussiaCentral);
+    addRoute(oilChinaWest, locChinaCentral);
+    addRoute(oilChinaEast, locChinaCentral);
+    addRoute(locChinaCentral, consChina);
+    addRoute(oilChinaEast, locChinaEast);
+    addRoute(locChinaEast, consJapan);
+
+    addRoute(oilAlgeria, locAlgeria);
+    addRoute(locAlgeria, consEurope);
+
+    addRoute(locMediterraneanSeaWest, consEurope);
+    addRoute(locMediterraneanSeaEast, locMediterraneanSeaWest);
+
+    addRoute(oilAlaska, locAlaska);
+    addRoute(locAlaska, locPacificEast);
+    addRoute(locPacificEast, consUsaWestCoast);
+    addRoute(locPacificEast, locPacificCalifornia);
+    addRoute(locPacificCalifornia, locPanamaSouth);
+    addRoute(locPanamaSouth, locPanamaNorth);
+    addRoute(locPanamaNorth, locCarribeanSea);
+    addRoute(locCarribeanSea, consUsaEastCoast);
+
+    addRoute(oilVenezuela, locAtlanticWest);
+    addRoute(locCarribeanSea, locAtlanticWest);
+    addRoute(locPanamaNorth, locAtlanticWest);
+
+    addRoute(oilTexas, locMexicoGulf);
+    addRoute(oilMexico, locMexicoGulf);
+    addRoute(locMexicoGulf, locCarribeanSea);
+    addRoute(oilEcuador, locPanamaSouth);
+
+    addRoute(oilCanada, consUsaWestCoast);
+    addRoute(oilCanada, consUsaEastCoast);
+
+    addRoute(oilNothSea, locAtlanticBrittany);
+    addRoute(oilNothSea, consEurope);
+    addRoute(consEurope, locAtlanticBrittany);
+    addRoute(locAtlanticBrittany, locAtlanticGibraltar);
+    addRoute(locAtlanticGibraltar, locAlgeria);
+    addRoute(locAtlanticGibraltar, locAtlanticAzores);
+    addRoute(locAtlanticAzores, locAtlanticWest);
+    addRoute(locAtlanticAzores, locAtlanticEquator);
+    addRoute(locAtlanticEquator, oilNigeria);
+    addRoute(locAtlanticEquator, consBrazil);
+    addRoute(locAtlanticEquator, locAtlanticSouth);
+    addRoute(locAtlanticSouth, urNamiba);
+    addRoute(locAtlanticSouth, locAtlanticArgentina);
+    addRoute(locAtlanticArgentina, oilArgentina);
+    addRoute(locAtlanticArgentina, locCapeHorn);
+
+    addRoute(locCapeHorn, locPacificSouth);
+    addRoute(locPacificSouth, oilEcuador);
+
   }
 
   void Globe::update(gf::Time time) {
@@ -173,6 +262,8 @@ namespace no {
       gf::Line line(pos0, pos1);
       line.setColor(gf::Color::Gray() * gf::Color::Opaque(0.7f));
       line.setWidth(3.0f);
+      line.setOutlineThickness(0.5f);
+      line.setOutlineColor(gf::Color::Gray(0.3f) * gf::Color::Opaque(0.7f));
       target.draw(line);
     }
 

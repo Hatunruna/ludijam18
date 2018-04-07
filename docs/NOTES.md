@@ -9,3 +9,14 @@
   - https://en.wikipedia.org/wiki/List_of_countries_by_uranium_production
   - https://en.wikipedia.org/wiki/Uranium_mining#/media/File:Uranium_production_world.PNG
   - http://chartsbin.com/view/3bt
+
+## Properties for locations
+
+- difference for oil (+: production, -: consumption)
+- difference for uranium (+: production, -: consumption)
+
+## Properties for routes
+
+- transportation cost
+- delay
+- throughput
