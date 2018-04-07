@@ -17,22 +17,13 @@
  */
 #include "Globe.h"
 
+#include <gf/Curves.h>
 #include <gf/RenderTarget.h>
 #include <gf/Shapes.h>
 
 namespace no {
 
-  enum class LocationType {
-    Consumer,
-    OilSource,
-    UraniumSource,
-  };
-
-  struct Location {
-    LocationType type;
-    gf::Vector2f position;
-  };
-
+#if 0
   static constexpr Location Locations[] = {
     /*
      * consumers
@@ -98,10 +89,76 @@ namespace no {
     { LocationType::UraniumSource, { 28.4711f, 214.41f } }, // Namibia
 
   };
+#endif
 
   Globe::Globe()
   {
 
+    /*
+     * consumers
+     */
+
+    auto consEurope = addLocation("Europe", LocationType::Consumer, { -44.7143f, -270.833f });
+    auto consRussia = addLocation("Russia", LocationType::Consumer, { 158.426f, -298.9f });
+    auto consUsaEastCoast = addLocation("USA, East Coast", LocationType::Consumer, { -545.688f, -200.521f });
+    auto consUsaWestCoast = addLocation("USA, West Coast", LocationType::Consumer, { -807.028f, -222.222f });
+    auto consBrazil = addLocation("Brazil", LocationType::Consumer, { -327.507f, 141.493f });
+    auto consSouthAfrica = addLocation("South Africa", LocationType::Consumer, { 75.3562f, 283.854f });
+    auto consIndia = addLocation("India", LocationType::Consumer, { 450.797f, -89.618f });
+    auto consJapan = addLocation("Japan", LocationType::Consumer, { 754.319f, -197.049f });
+    auto consChina = addLocation("China", LocationType::Consumer, { 649.008f, -133.681f });
+    auto consAustralia = addLocation("Australia", LocationType::Consumer, { 838.538f, 270.833f });
+
+    /*
+     * oil sources
+     */
+
+    auto oilKuweit = addLocation("Kuwait", LocationType::OilSource, { 227.913f, -144.097f });
+    auto oilSaudi = addLocation("Saudi Arabia", LocationType::OilSource, { 256.565f, -105.903f });
+    auto oilIraq = addLocation("Iraq", LocationType::OilSource, { 194.92f, -197.917f });
+    auto oilAlgeria = addLocation("Algeria", LocationType::OilSource, { -56.0014f, -140.625f });
+    auto oilNigeria = addLocation("Nigeria", LocationType::OilSource, { -25.613f, 36.4583f });
+    auto oilNothSea = addLocation("North Sea", LocationType::OilSource, { -57.7379f, -371.528f });
+    auto oilAlaska = addLocation("Alaska", LocationType::OilSource, { -788.18f, -410.799f });
+    auto oilCanada = addLocation("Canada", LocationType::OilSource, { -698.752f, -323.993f });
+    auto oilMexico = addLocation("Mexico", LocationType::OilSource, { -669.232f, -80.0694f });
+    auto oilTexas = addLocation("Texas", LocationType::OilSource, { -682.255f, -157.326f });
+    auto oilVenezuela = addLocation("Venezuela", LocationType::OilSource, { -505.134f, -8.02088f });
+    auto oilEcuador = addLocation("Ecuador", LocationType::OilSource, { -599.772f, 72.7083f });
+    auto oilArgentina = addLocation("Argentina", LocationType::OilSource, { -459.986f, 380.868f });
+    auto oilCaspianSea = addLocation("Caspian Sea", LocationType::OilSource, { 243.288f, -262.361f });
+    auto oilUral = addLocation("Ural", LocationType::OilSource, { 206.822f, -354.375f });
+    auto oilSiberia = addLocation("Siberia", LocationType::OilSource, { 331.848f, -389.097f });
+    auto oilIndia = addLocation("India", LocationType::OilSource, { 402.175f, -82.6735f });
+    auto oilChinaEast = addLocation("China, East", LocationType::OilSource, { 663.515f, -251.944f });
+    auto oilChinaWest = addLocation("China, West", LocationType::OilSource, { 447.324f, -232.847f });
+    auto oilIndonesia = addLocation("Indonesia", LocationType::OilSource, { 601.87f, 84.8611f });
+
+    /*
+     * uranium sources
+     */
+
+    auto urKazakhstan = addLocation("Kazakhstan", LocationType::UraniumSource, { 352.071f, -250.868f });
+    auto urCanada = addLocation("Canada", LocationType::UraniumSource, { -497.935f, -286.458f });
+    auto urAustralia = addLocation("Australia", LocationType::UraniumSource, { 766.474f, 296.007f });
+    auto urNiger = addLocation("Niger", LocationType::UraniumSource, { -20.1503f, -46.007f });
+    auto urRussia = addLocation("Russia", LocationType::UraniumSource, { 117.032f, -358.507f });
+    auto urNamiba = addLocation("Namibia", LocationType::UraniumSource, { 28.4711f, 214.41f });
+
+    /*
+     * pipelines
+     */
+
+    auto locUsaCentral = addLocation("", LocationType::None, { -653.964f, -202.917f });
+
+
+    addRoute(locUsaCentral, oilTexas);
+    addRoute(locUsaCentral, consUsaEastCoast);
+    addRoute(locUsaCentral, consUsaWestCoast);
+
+    addRoute(consRussia, oilUral);
+    addRoute(oilUral, oilSiberia);
+    addRoute(consRussia, urRussia);
   }
 
   void Globe::update(gf::Time time) {
@@ -109,35 +166,66 @@ namespace no {
   }
 
   void Globe::render(gf::RenderTarget& target, const gf::RenderStates& states) {
-    for (auto& loc : Locations) {
+    for (auto& route : m_routes) {
+      auto pos0 = m_locations[route.endPoint0].position;
+      auto pos1 = m_locations[route.endPoint1].position;
+
+      gf::Line line(pos0, pos1);
+      line.setColor(gf::Color::Gray() * gf::Color::Opaque(0.7f));
+      line.setWidth(3.0f);
+      target.draw(line);
+    }
+
+    for (auto& loc : m_locations) {
       gf::CircleShape shape;
-      shape.setColor(gf::Color::Transparent);
 
       switch (loc.type) {
         case LocationType::Consumer:
           shape.setRadius(40.0f);
+          shape.setColor(gf::Color::Transparent);
           shape.setOutlineColor(gf::Color::Azure * gf::Color::Opaque(0.7f));
           shape.setOutlineThickness(10.0f);
           break;
 
         case LocationType::OilSource:
           shape.setRadius(15.0f);
+          shape.setColor(gf::Color::Transparent);
           shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
           shape.setOutlineThickness(5.0f);
           break;
 
         case LocationType::UraniumSource:
           shape.setRadius(15.0f);
+          shape.setColor(gf::Color::Transparent);
           shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
           shape.setOutlineThickness(5.0f);
+          break;
+
+        case LocationType::None:
           break;
       }
 
       shape.setPosition(loc.position);
       shape.setAnchor(gf::Anchor::Center);
       target.draw(shape);
+
+      shape.setRadius(3.0f);
+      shape.setColor(gf::Color::Gray());
+      shape.setOutlineThickness(0.0f);
+      shape.setAnchor(gf::Anchor::Center);
+      target.draw(shape);
     }
 
+  }
+
+  std::size_t Globe::addLocation(std::string name, LocationType type, gf::Vector2f pos) {
+    std::size_t id = m_locations.size();
+    m_locations.push_back({ std::move(name), type, pos });
+    return id;
+  }
+
+  void Globe::addRoute(std::size_t endPoint0, std::size_t endPoint1) {
+    m_routes.push_back({ endPoint0, endPoint1 });
   }
 
 }

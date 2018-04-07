@@ -34,6 +34,31 @@ namespace no {
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
   private:
+    enum class LocationType {
+      None,
+      Consumer,
+      OilSource,
+      UraniumSource,
+    };
+
+    struct Location {
+      std::string name;
+      LocationType type;
+      gf::Vector2f position;
+    };
+
+    struct Route {
+      std::size_t endPoint0;
+      std::size_t endPoint1;
+    };
+
+  private:
+    std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
+    void addRoute(std::size_t endPoint0, std::size_t endPoint1);
+
+  private:
+    std::vector<Location> m_locations;
+    std::vector<Route> m_routes;
   };
 
 }
