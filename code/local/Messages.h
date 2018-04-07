@@ -25,6 +25,7 @@ using namespace gf::literals;
 namespace no {
   enum class BuildingType {
     PetrolPump,
+    UraniumMining,
   };
 
   struct BuildingSelection : public gf::Message {

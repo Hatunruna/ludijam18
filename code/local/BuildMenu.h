@@ -49,9 +49,15 @@ namespace no {
     State m_state;
 
     // Texture and widgets
+    // Oil pump
     gf::Texture& m_oilPumpTexture;
     gf::Sprite m_oilPumpSprite;
     gf::SpriteWidget m_oilPumpWidget;
+
+    // Uranium Mining
+    gf::Texture& m_uraniumMiningTexture;
+    gf::Sprite m_uraniumMiningSprite;
+    gf::SpriteWidget m_uraniumMiningWidget;
 
     gf::WidgetContainer m_widgets;
 

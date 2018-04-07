@@ -32,6 +32,8 @@ namespace no {
   : m_state(State::Idle)
   , m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
   , m_oilPumpWidget(m_oilPumpSprite)
+  , m_uraniumMiningTexture(gResourceManager().getTexture("uranium-mining.png"))
+  , m_uraniumMiningWidget(m_uraniumMiningSprite)
   , m_selectedTexture(nullptr)
   {
     m_oilPumpTexture.setSmooth();
@@ -39,8 +41,8 @@ namespace no {
     // Sprite for building
     gf::WidgetContainer widgets;
 
+    // Widget for pump oil
     m_oilPumpSprite.setTexture(m_oilPumpTexture);
-
     m_oilPumpWidget.setCallback([this]() {
       if (m_state == State::Idle) {
         m_state = State::BuildSelected;
@@ -53,6 +55,22 @@ namespace no {
       }
     });
     m_widgets.addWidget(m_oilPumpWidget);
+
+    // Widget for uranium
+    m_uraniumMiningSprite.setTexture(m_uraniumMiningTexture);
+    m_uraniumMiningWidget.setCallback([this]() {
+      if (m_state == State::Idle) {
+        m_state = State::BuildSelected;
+        m_selectedTexture = &m_uraniumMiningTexture;
+
+        // Send the selection
+        BuildingSelection selection;
+        selection.building = BuildingType::UraniumMining;
+        gMessageManager().sendMessage(&selection);
+      }
+    });
+    m_widgets.addWidget(m_uraniumMiningWidget);
+
   }
 
   void BuildMenu::pointTo(gf::Vector2f position) {
@@ -89,10 +107,18 @@ namespace no {
 
     target.draw(rect, states);
 
+    // Pump oil
     auto position = coordinates.getRelativePoint({ MenuPadding, MenuPadding });
     size = coordinates.getRelativeSize({ MenuRelativeSize.width - MenuPadding * 2, MenuRelativeSize.height });
+    auto padding = coordinates.getRelativeSize({ MenuPadding, MenuPadding });
     m_oilPumpSprite.setScale(size.width / WidgetSize);
     m_oilPumpSprite.setPosition(position);
+
+    // Uranium mining
+    position.y += size.width + padding.width;
+    size = coordinates.getRelativeSize({ MenuRelativeSize.width - MenuPadding * 2, MenuRelativeSize.height });
+    m_uraniumMiningSprite.setScale(size.width / WidgetSize);
+    m_uraniumMiningSprite.setPosition(position);
 
     m_widgets.render(target, states);
 
@@ -102,10 +128,10 @@ namespace no {
       // Drawing the cursor
       gf::Sprite cursor;
       cursor.setTexture(*m_selectedTexture);
-      auto padding = coordinates.getRelativeSize({ MenuPadding, MenuPadding });
-      cursor.setPosition({m_mousePosition.x + padding.x, m_mousePosition.y - padding.y});
+      cursor.setColor(gf::Color::Opaque(0.5f));
+      cursor.setPosition({m_mousePosition.x, m_mousePosition.y});
       cursor.setScale(size.width / WidgetSize);
-      cursor.setAnchor(gf::Anchor::BottomLeft);
+      cursor.setAnchor(gf::Anchor::Center);
 
       target.draw(cursor);
     }
