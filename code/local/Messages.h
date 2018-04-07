@@ -43,7 +43,6 @@ namespace no {
     static constexpr gf::Id type = "RouteStartQuery"_id;
 
     gf::Vector2f position;
-    std::size_t location;
     bool isValid;
   };
 
@@ -51,7 +50,6 @@ namespace no {
     static constexpr gf::Id type = "RoutePipeQuery"_id;
 
     gf::Vector2f position;
-    std::size_t previousLocation;
     bool isValid;
     bool isEnded;
   };

@@ -389,11 +389,26 @@ namespace no {
       }
     }
 
+    // Draw the temporary path
+    if (m_tempRoute.size() > 0) {
+      for (std::size_t i = 0; i < m_tempRoute.size() - 1; ++i) {
+        auto end0Pos = m_locations[m_tempRoute[i]].position;
+        auto end1Pos = m_locations[m_tempRoute[i + 1]].position;
+        gf::Line line(end0Pos, end1Pos);
+        line.setColor(gf::Color::White);
+        line.setWidth(3.0f);
+        line.setOutlineThickness(0.5f);
+        line.setOutlineColor(gf::Color::Black);
+        target.draw(line);
+      }
+    }
   }
 
   gf::MessageStatus Globe::onBuildingQuery(gf::Id id, gf::Message *msg) {
     assert(id == BuildingQuery::type);
     BuildingQuery *query = static_cast<BuildingQuery*>(msg);
+
+    m_tempRoute.clear();
 
     // Check if the build is valid
     for (auto &location: m_locations) {
@@ -425,11 +440,8 @@ namespace no {
       gf::CircF circle(location.position, ResourcesRadius);
       if ((location.type == LocationType::OilSource || location.type == LocationType::UraniumSource) && location.isBuild && circle.contains(query->position)) {
         query->isValid = true;
-        query->location = i;
-
-        // Send correct center to build menu to show the trace route
-        // But the unit is not the same so impossible to use this correctly...
-        query->position = location.position;
+        m_tempRoute.clear();
+        m_tempRoute.push_back(i);
 
         break;
       }
@@ -450,17 +462,21 @@ namespace no {
 
       // Create circle to check position
       gf::CircF circle(location.position, WaypointHitbox);
-      if ((location.type == LocationType::None || location.type == LocationType::Consumer) && circle.contains(query->position) && isValidRoute(query->previousLocation, i)) {
-          query->previousLocation = i;
-          query->isValid = true;
-          query->isEnded = location.type == LocationType::Consumer;
+      auto previousLocation = m_tempRoute.back();
+      if ((location.type == LocationType::None || location.type == LocationType::Consumer) && circle.contains(query->position) && isValidRoute(previousLocation, i)) {
+        query->isValid = true;
+        query->isEnded = location.type == LocationType::Consumer;
 
-          // Send correct center to build menu to show the trace route
-          // But the unit is not the same so impossible to use this correctly...
-          query->position = location.position;
+        m_tempRoute.push_back(i);
 
-          break;
+        if (query->isEnded) {
+          gf::Log::debug("End of route: SEND THIS!\n");
+
+          m_tempRoute.clear();
         }
+
+        break;
+      }
     }
 
     return gf::MessageStatus::Keep;

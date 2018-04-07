@@ -68,6 +68,9 @@ namespace no {
     std::vector<Location> m_locations;
     std::vector<Route> m_routes;
 
+    // Temporary route
+    std::vector<std::size_t> m_tempRoute;
+
     // Texture for resources
     gf::Texture& m_oilPumpTexture;
     gf::Texture& m_uraniumMiningTexture;
