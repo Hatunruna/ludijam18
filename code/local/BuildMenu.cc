@@ -23,13 +23,16 @@
 #include <gf/Shapes.h>
 #include <gf/VectorOps.h>
 
+#include "Messages.h"
 #include "Singletons.h"
 
 namespace no {
 
   BuildMenu::BuildMenu()
-  : m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
+  : m_state(State::Idle)
+  , m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
   , m_oilPumpWidget(m_oilPumpSprite)
+  , m_selectedTexture(nullptr)
   {
     m_oilPumpTexture.setSmooth();
 
@@ -38,8 +41,24 @@ namespace no {
 
     m_oilPumpSprite.setTexture(m_oilPumpTexture);
 
-    m_oilPumpWidget.setCallback([]() { gf::Log::debug("Sprite!\n");  });
+    m_oilPumpWidget.setCallback([this]() {
+      if (m_state == State::Idle) {
+        m_state = State::BuildSelected;
+        m_selectedTexture = &m_oilPumpTexture;
+      }
+    });
     m_widgets.addWidget(m_oilPumpWidget);
+  }
+
+  void BuildMenu::pointTo(gf::Vector2f position) {
+    m_mousePosition = position;
+    m_widgets.pointTo(m_mousePosition);
+  }
+
+  void BuildMenu::pressed(gf::MouseButton button) {
+    if (button == gf::MouseButton::Left) {
+      m_widgets.triggerAction();
+    }
   }
 
   gf::WidgetContainer& BuildMenu::getWidgetContainer() {
@@ -47,12 +66,13 @@ namespace no {
   }
 
   void BuildMenu::update(gf::Time time) {
-
+    // gf::Log::debug("(%f;%f)\n", m_mousePosition.x, m_mousePosition.y);
   }
 
   void BuildMenu::render(gf::RenderTarget& target, const gf::RenderStates& states) {
     gf::Coordinates coordinates(target);
 
+    // Drawing the menu
     static constexpr float WidgetSize = 256.0f;
     static constexpr float MenuPadding = 0.01f;
     static constexpr gf::Vector2f MenuRelativeSize = { 0.075f, 1.0f };
@@ -61,7 +81,6 @@ namespace no {
     gf::RectangleShape rect;
     rect.setSize(size);
     rect.setColor(gf::Color::White);
-    // rect.setPosition({0.0f, 0.0f});
 
     target.draw(rect, states);
 
@@ -71,7 +90,20 @@ namespace no {
     m_oilPumpSprite.setPosition(position);
 
     m_widgets.render(target, states);
-  }
 
+    if (m_state == State::BuildSelected) {
+      assert(m_selectedTexture != nullptr);
+
+      // Drawing the cursor
+      gf::Sprite cursor;
+      cursor.setTexture(*m_selectedTexture);
+      auto padding = coordinates.getRelativeSize({ MenuPadding, MenuPadding });
+      cursor.setPosition({m_mousePosition.x + padding.x, m_mousePosition.y - padding.y});
+      cursor.setScale(size.width / WidgetSize);
+      cursor.setAnchor(gf::Anchor::BottomLeft);
+
+      target.draw(cursor);
+    }
+  }
 
 }

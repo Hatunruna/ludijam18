@@ -31,17 +31,33 @@ namespace no {
   public:
     BuildMenu();
 
+    void pointTo(gf::Vector2f position);
+    void pressed(gf::MouseButton button);
+
     gf::WidgetContainer& getWidgetContainer();
     virtual void update(gf::Time time) override;
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
   private:
-    gf::Texture& m_oilPumpTexture;
+    enum class State {
+      Idle,
+      BuildSelected,
+    };
 
+  private:
+    // State system
+    State m_state;
+
+    // Texture and widgets
+    gf::Texture& m_oilPumpTexture;
     gf::Sprite m_oilPumpSprite;
     gf::SpriteWidget m_oilPumpWidget;
 
     gf::WidgetContainer m_widgets;
+
+    // Cursor
+    gf::Vector2f m_mousePosition;
+    gf::Texture *m_selectedTexture;
   };
 
 }

@@ -24,6 +24,12 @@ using namespace gf::literals;
 
 namespace no {
 
+  struct BuildingSelection : public gf::Message {
+    static constexpr gf::Id type = "BuildingSelection"_id;
+
+    std::string textureName;
+  };
+
 }
 
 #endif // NO_MESSAGES_H
