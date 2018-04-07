@@ -20,6 +20,8 @@
 
 #include <gf/Message.h>
 
+#include "Troubles.h"
+
 using namespace gf::literals;
 
 namespace no {
@@ -32,6 +34,18 @@ namespace no {
     static constexpr gf::Id type = "BuildingSelection"_id;
 
     BuildingType building;
+  };
+
+  struct NewSourceTrouble : public gf::Message {
+    static constexpr gf::Id type = "NewSourceTrouble"_id;
+
+    SourceTrouble trouble;
+  };
+
+  struct NewRouteTrouble : public gf::Message {
+    static constexpr gf::Id type = "NewRouteTrouble"_id;
+
+    RouteTrouble trouble;
   };
 
 }

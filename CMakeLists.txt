@@ -21,6 +21,7 @@ add_executable(no-inc
   code/local/BuildMenu.cc
   code/local/Globe.cc
   code/local/Singletons.cc
+  code/local/Troubles.cc
   code/local/WorldMap.cc
 )
 
