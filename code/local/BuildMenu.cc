@@ -47,11 +47,6 @@ namespace no {
 
       m_state = State::BuildSelected;
       m_selectedBuilding = BuildingType::PetrolPump;
-
-      // Send the selection
-      // BuildingSelection selection;
-      // selection.building = BuildingType::PetrolPump;
-      // gMessageManager().sendMessage(&selection);
     });
     m_widgets.addWidget(m_oilPumpWidget);
 
@@ -61,11 +56,6 @@ namespace no {
       assert(m_state == State::Idle);
       m_state = State::BuildSelected;
       m_selectedBuilding = BuildingType::UraniumMining;
-
-      // Send the selection
-      // BuildingSelection selection;
-      // selection.building = BuildingType::UraniumMining;
-      // gMessageManager().sendMessage(&selection);
 
     });
     m_widgets.addWidget(m_uraniumMiningWidget);

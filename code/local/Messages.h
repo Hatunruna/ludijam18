@@ -30,12 +30,6 @@ namespace no {
     UraniumMining = 11,
   };
 
-  struct BuildingSelection : public gf::Message {
-    static constexpr gf::Id type = "BuildingSelection"_id;
-
-    BuildingType building;
-  };
-
   struct BuildingQuery : public gf::Message {
     static constexpr gf::Id type = "BuildingQuery"_id;
 

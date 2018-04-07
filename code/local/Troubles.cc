@@ -23,7 +23,7 @@
 
  namespace no {
    TroubleContainer::TroubleContainer() {
-     gMessageManager().registerHandler<BuildingSelection>(&TroubleContainer::onNewSourceTrouble, this);
+     gMessageManager().registerHandler<NewSourceTrouble>(&TroubleContainer::onNewSourceTrouble, this);
    }
 
    void TroubleContainer::update(gf::Time time) {
