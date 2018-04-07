@@ -106,11 +106,13 @@ namespace no {
           RouteStartQuery query;
           query.position = worldPosition;
           query.isValid = false;
+          query.location = 0;
           gMessageManager().sendMessage(&query);
 
           if (query.isValid) {
             // No the correct possition but I don't know how to get their
-            m_previousPoint = m_mousePosition;
+            m_previousPoints.push_back(m_mousePosition);
+            m_previousLocation = query.location;
             m_state = State::RouteMakerPipe;
           }
           else { // To allow change building without select and build in one clic
@@ -118,6 +120,33 @@ namespace no {
           }
         }
         break;
+
+      case State::RouteMakerPipe:
+      {
+        RoutePipeQuery query;
+        query.position = worldPosition;
+        query.previousLocation = m_previousLocation;
+        query.isValid = false;
+        query.isEnded = false;
+        gMessageManager().sendMessage(&query);
+
+        if (query.isValid) {
+          // No the correct possition but I don't know how to get their
+          m_previousPoints.push_back(m_mousePosition);
+          m_previousLocation = query.previousLocation;
+
+          if (query.isEnded) {
+            gf::Log::debug("End of route: SEND THIS!\n");
+
+            m_state = State::Idle;
+            m_previousPoints.clear();
+          }
+        }
+        else { // To allow change building without select and build in one clic
+          m_widgets.triggerAction();
+        }
+      }
+      break;
 
       default:
         assert(false);
@@ -196,7 +225,16 @@ namespace no {
       target.draw(cursor);
     }
     else if (m_state == State::RouteMakerPipe) {
-      gf::Line line(m_previousPoint, m_mousePosition);
+      for (std::size_t i = 1; i < m_previousPoints.size(); ++i) {
+        gf::Line line(m_previousPoints[i-1], m_previousPoints[i]);
+        line.setColor(gf::Color::White);
+        line.setWidth(3.0f);
+        line.setOutlineThickness(0.5f);
+        line.setOutlineColor(gf::Color::Black);
+        target.draw(line);
+      }
+
+      gf::Line line(m_previousPoints.back(), m_mousePosition);
       line.setColor(gf::Color::White);
       line.setWidth(3.0f);
       line.setOutlineThickness(0.5f);

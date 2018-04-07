@@ -71,7 +71,8 @@ namespace no {
     gf::WidgetContainer m_widgets;
 
     // Route maker
-    gf::Vector2f m_previousPoint;
+    std::vector<gf::Vector2f> m_previousPoints;
+    std::size_t m_previousLocation;
 
     // Cursor
     gf::Vector2f m_mousePosition;

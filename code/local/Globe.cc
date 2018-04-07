@@ -304,6 +304,7 @@ namespace no {
     // Messages handlers
     gMessageManager().registerHandler<BuildingQuery>(&Globe::onBuildingQuery, this);
     gMessageManager().registerHandler<RouteStartQuery>(&Globe::onRouteStartQuery, this);
+    gMessageManager().registerHandler<RoutePipeQuery>(&Globe::onRoutePipeQuery, this);
   }
 
   void Globe::update(gf::Time time) {
@@ -418,11 +419,13 @@ namespace no {
     RouteStartQuery *query = static_cast<RouteStartQuery*>(msg);
 
     // Check if the build is valid
-    for (auto &location: m_locations) {
+    for (std::size_t i = 0; i < m_locations.size(); ++i) {
+      auto &location = m_locations[i];
       // Create circle to check position
       gf::CircF circle(location.position, ResourcesRadius);
-      if ((location.type == LocationType::OilSource || location.type == LocationType::UraniumSource) && circle.contains(query->position)) {
+      if ((location.type == LocationType::OilSource || location.type == LocationType::UraniumSource) && location.isBuild && circle.contains(query->position)) {
         query->isValid = true;
+        query->location = i;
 
         // Send correct center to build menu to show the trace route
         // But the unit is not the same so impossible to use this correctly...
@@ -430,6 +433,34 @@ namespace no {
 
         break;
       }
+    }
+
+    return gf::MessageStatus::Keep;
+  }
+
+  gf::MessageStatus Globe::onRoutePipeQuery(gf::Id id, gf::Message *msg) {
+    assert(id == RoutePipeQuery::type);
+    RoutePipeQuery *query = static_cast<RoutePipeQuery*>(msg);
+
+    static constexpr float WaypointHitbox = 10.0f;
+
+    // Check if the build is valid
+    for (std::size_t i = 0; i < m_locations.size(); ++i) {
+      auto &location = m_locations[i];
+
+      // Create circle to check position
+      gf::CircF circle(location.position, WaypointHitbox);
+      if ((location.type == LocationType::None || location.type == LocationType::Consumer) && circle.contains(query->position) && isValidRoute(query->previousLocation, i)) {
+          query->previousLocation = i;
+          query->isValid = true;
+          query->isEnded = location.type == LocationType::Consumer;
+
+          // Send correct center to build menu to show the trace route
+          // But the unit is not the same so impossible to use this correctly...
+          query->position = location.position;
+
+          break;
+        }
     }
 
     return gf::MessageStatus::Keep;
@@ -447,6 +478,18 @@ namespace no {
 
   void Globe::addRoute(std::size_t endPoint0, std::size_t endPoint1) {
     m_routes.push_back({ endPoint0, endPoint1 });
+  }
+
+  bool Globe::isValidRoute(std::size_t endPoint0, std::size_t endPoint1) {
+    for (std::size_t i = 0; i < m_locations.size(); ++i) {
+      auto &route = m_routes[i];
+
+      if ((route.endPoint0 == endPoint0 && route.endPoint1 == endPoint1) || (route.endPoint0 == endPoint1 && route.endPoint1 == endPoint0)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 }

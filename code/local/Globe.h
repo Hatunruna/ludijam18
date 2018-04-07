@@ -36,6 +36,7 @@ namespace no {
 
     gf::MessageStatus onBuildingQuery(gf::Id id, gf::Message *msg);
     gf::MessageStatus onRouteStartQuery(gf::Id id, gf::Message *msg);
+    gf::MessageStatus onRoutePipeQuery(gf::Id id, gf::Message *msg);
 
   private:
     enum class LocationType: int {
@@ -61,6 +62,7 @@ namespace no {
     std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
     std::size_t addAnonymousLocation(gf::Vector2f pos);
     void addRoute(std::size_t endPoint0, std::size_t endPoint1);
+    bool isValidRoute(std::size_t endPoint0, std::size_t endPoint1);
 
   private:
     std::vector<Location> m_locations;
