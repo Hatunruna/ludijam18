@@ -26,6 +26,7 @@ using namespace gf::literals;
 
 namespace no {
   enum class BuildingType: int {
+    Route,
     PetrolPump = 10,
     UraniumMining = 11,
   };
@@ -34,6 +35,13 @@ namespace no {
     static constexpr gf::Id type = "BuildingQuery"_id;
 
     BuildingType building;
+    gf::Vector2f position;
+    bool isValid;
+  };
+
+  struct RouteStartQuery : public gf::Message {
+    static constexpr gf::Id type = "RouteStartQuery"_id;
+
     gf::Vector2f position;
     bool isValid;
   };

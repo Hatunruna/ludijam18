@@ -44,6 +44,8 @@ namespace no {
     enum class State {
       Idle,
       BuildSelected,
+      RouteMakerSource,
+      RouteMakerPipe,
     };
 
   private:
@@ -61,7 +63,15 @@ namespace no {
     gf::Sprite m_uraniumMiningSprite;
     gf::SpriteWidget m_uraniumMiningWidget;
 
+    // Route
+    gf::Texture& m_routeTexture;
+    gf::Sprite m_routeSprite;
+    gf::SpriteWidget m_routeWidget;
+
     gf::WidgetContainer m_widgets;
+
+    // Route maker
+    gf::Vector2f m_previousPoint;
 
     // Cursor
     gf::Vector2f m_mousePosition;

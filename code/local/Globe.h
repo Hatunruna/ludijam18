@@ -35,6 +35,7 @@ namespace no {
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
     gf::MessageStatus onBuildingQuery(gf::Id id, gf::Message *msg);
+    gf::MessageStatus onRouteStartQuery(gf::Id id, gf::Message *msg);
 
   private:
     enum class LocationType: int {

@@ -18,6 +18,7 @@
 #include "BuildMenu.h"
 
 #include <gf/Coordinates.h>
+#include <gf/Curves.h>
 #include <gf/Log.h>
 #include <gf/RenderTarget.h>
 #include <gf/Shapes.h>
@@ -33,6 +34,8 @@ namespace no {
   , m_oilPumpWidget(m_oilPumpSprite)
   , m_uraniumMiningTexture(gResourceManager().getTexture("uranium-mining.png"))
   , m_uraniumMiningWidget(m_uraniumMiningSprite)
+  , m_routeTexture(gResourceManager().getTexture("route.png"))
+  , m_routeWidget(m_routeSprite)
   , m_selectedBuilding(BuildingType::PetrolPump)
   {
     m_oilPumpTexture.setSmooth();
@@ -57,6 +60,15 @@ namespace no {
     });
     m_widgets.addWidget(m_uraniumMiningWidget);
 
+    // Widget for route
+    m_routeSprite.setTexture(m_routeTexture);
+    m_routeWidget.setCallback([this]() {
+      m_state = State::RouteMakerSource;
+      m_selectedBuilding = BuildingType::Route;
+
+    });
+    m_widgets.addWidget(m_routeWidget);
+
   }
 
   void BuildMenu::pointTo(gf::Vector2f position) {
@@ -66,23 +78,49 @@ namespace no {
 
   void BuildMenu::pressed(gf::MouseButton button, gf::Vector2f worldPosition) {
     if (button == gf::MouseButton::Left) {
-      if (m_state == State::Idle) {
+      switch (m_state) {
+      case State::Idle:
         m_widgets.triggerAction();
-      }
-      else if (m_state == State::BuildSelected) {
-        BuildingQuery query;
-        query.building = m_selectedBuilding;
-        query.position = worldPosition;
-        query.isValid = false;
-        gMessageManager().sendMessage(&query);
+        break;
 
-        if (query.isValid) {
-          gf::Log::debug("SPEND MONEY!\n");
-          m_state = State::Idle;
+      case State::BuildSelected:
+        {
+          BuildingQuery query;
+          query.building = m_selectedBuilding;
+          query.position = worldPosition;
+          query.isValid = false;
+          gMessageManager().sendMessage(&query);
+
+          if (query.isValid) {
+            gf::Log::debug("Building construct: SPEND MONEY!\n");
+            m_state = State::Idle;
+          }
+          else { // To allow change building without select and build in one clic
+            m_widgets.triggerAction();
+          }
         }
-        else { // To allow change building without select and build in one clic
-          m_widgets.triggerAction();
+        break;
+
+      case State::RouteMakerSource:
+        {
+          RouteStartQuery query;
+          query.position = worldPosition;
+          query.isValid = false;
+          gMessageManager().sendMessage(&query);
+
+          if (query.isValid) {
+            // No the correct possition but I don't know how to get their
+            m_previousPoint = m_mousePosition;
+            m_state = State::RouteMakerPipe;
+          }
+          else { // To allow change building without select and build in one clic
+            m_widgets.triggerAction();
+          }
         }
+        break;
+
+      default:
+        assert(false);
       }
     }
   }
@@ -123,9 +161,15 @@ namespace no {
     m_uraniumMiningSprite.setScale(size.width / WidgetSize);
     m_uraniumMiningSprite.setPosition(position);
 
+    // Route
+    position.y += size.width + padding.width;
+    size = coordinates.getRelativeSize({ MenuRelativeSize.width - MenuPadding * 2, MenuRelativeSize.height });
+    m_routeSprite.setScale(size.width / WidgetSize);
+    m_routeSprite.setPosition(position);
+
     m_widgets.render(target, states);
 
-    if (m_state == State::BuildSelected) {
+    if (m_state == State::BuildSelected || m_state == State::RouteMakerSource) {
       // Drawing the cursor
       gf::Sprite cursor;
       switch (m_selectedBuilding) {
@@ -137,6 +181,10 @@ namespace no {
         cursor.setTexture(m_uraniumMiningTexture);
         break;
 
+      case BuildingType::Route:
+        cursor.setTexture(m_routeTexture);
+        break;
+
       default:
         assert(false);
       }
@@ -146,6 +194,14 @@ namespace no {
       cursor.setAnchor(gf::Anchor::Center);
 
       target.draw(cursor);
+    }
+    else if (m_state == State::RouteMakerPipe) {
+      gf::Line line(m_previousPoint, m_mousePosition);
+      line.setColor(gf::Color::White);
+      line.setWidth(3.0f);
+      line.setOutlineThickness(0.5f);
+      line.setOutlineColor(gf::Color::Black);
+      target.draw(line);
     }
   }
 

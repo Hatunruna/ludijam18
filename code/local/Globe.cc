@@ -303,6 +303,7 @@ namespace no {
 
     // Messages handlers
     gMessageManager().registerHandler<BuildingQuery>(&Globe::onBuildingQuery, this);
+    gMessageManager().registerHandler<RouteStartQuery>(&Globe::onRouteStartQuery, this);
   }
 
   void Globe::update(gf::Time time) {
@@ -404,6 +405,28 @@ namespace no {
       if (locationType == buildingType && !location.isBuild && circle.contains(query->position)) {
         location.isBuild = true;
         query->isValid = true;
+
+        break;
+      }
+    }
+
+    return gf::MessageStatus::Keep;
+  }
+
+  gf::MessageStatus Globe::onRouteStartQuery(gf::Id id, gf::Message *msg) {
+    assert(id == RouteStartQuery::type);
+    RouteStartQuery *query = static_cast<RouteStartQuery*>(msg);
+
+    // Check if the build is valid
+    for (auto &location: m_locations) {
+      // Create circle to check position
+      gf::CircF circle(location.position, ResourcesRadius);
+      if ((location.type == LocationType::OilSource || location.type == LocationType::UraniumSource) && circle.contains(query->position)) {
+        query->isValid = true;
+
+        // Send correct center to build menu to show the trace route
+        // But the unit is not the same so impossible to use this correctly...
+        query->position = location.position;
 
         break;
       }
