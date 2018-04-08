@@ -478,6 +478,18 @@ namespace no {
       if (circle.contains(query->position)) {
         query->isValid = true;
 
+        switch (location.type) {
+          case LocationType::OilSource:
+          case LocationType::UraniumSource:
+
+            break;
+
+          default:
+            query->isValid = false;
+            break;
+        }
+
+
         gf::Log::debug("Info of : %s\n", m_locations[i].name.c_str());
         gf::Log::debug("Display something\n");
         gf::Log::debug("DO IT! JUST DO IT!\n");
