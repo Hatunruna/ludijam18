@@ -54,6 +54,19 @@ namespace no {
       LocationType type;
       gf::Vector2f position;
       bool isBuild;
+
+      union {
+        // Consumers
+        struct {
+          float oilConsumption;
+          float oilPrice;
+        } consumerData;
+
+        // Sources
+        struct {
+          float resourceProduction;
+        } sourceData;
+      };
     };
 
     struct Route {
@@ -64,11 +77,15 @@ namespace no {
 
   private:
     std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
+    std::size_t addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor);
+    std::size_t addSourceLocation(std::string name, LocationType type, gf::Vector2f pos, float ResourceProductionFactor);
     std::size_t addAnonymousLocation(gf::Vector2f pos);
     void addRoute(std::size_t endPoint0, std::size_t endPoint1);
     bool isValidRoute(std::size_t endPoint0, std::size_t endPoint1);
     void drawPath(gf::RenderTarget& target, ExportPath &path);
     Route findRoute(std::size_t endPoint0, std::size_t endPoint1);
+    // std::vector<Location> findConsumersFormSource(std::size_t id);
+    // std::vector<Location> findConsumersFormSource(std::size_t id);
 
   private:
     std::vector<Location> m_locations;

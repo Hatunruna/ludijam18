@@ -104,7 +104,15 @@ namespace no {
 
           if (query.isValid) {
             BalanceOperation operation;
-            operation.value = -BaseValueOilPump;
+            if (m_selectedBuilding == BuildingType::PetrolPump) {
+              operation.value = -BuildCostOilPump;
+            }
+            else if (m_selectedBuilding == BuildingType::UraniumMining) {
+              operation.value = -BuildCostUraniumMining;
+            }
+            else {
+              assert(false);
+            }
             gMessageManager().sendMessage(&operation);
 
             m_state = State::Idle;

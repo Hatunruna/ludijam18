@@ -38,11 +38,11 @@ namespace no {
      * consumers
      */
 
-    auto consEurope = addLocation("Europe", LocationType::Consumer, { -44.7143f, -270.833f });
+    auto consEurope = addConsumerLocation("Europe", { -44.7143f, -270.833f }, 1.0f, 1.0f);
     auto consRussia = addLocation("Russia", LocationType::Consumer, { 158.426f, -298.9f });
     auto consUsaEastCoast = addLocation("USA, East Coast", LocationType::Consumer, { -545.688f, -200.521f });
     auto consUsaWestCoast = addLocation("USA, West Coast", LocationType::Consumer, { -807.028f, -222.222f });
-    auto consBrazil = addLocation("Brazil", LocationType::Consumer, { -327.507f, 141.493f });
+    auto consBrazil = addConsumerLocation("Brazil", { -327.507f, 141.493f }, 0.5f, 0.5f);
     auto consSouthAfrica = addLocation("South Africa", LocationType::Consumer, { 75.3562f, 283.854f });
     auto consIndia = addLocation("India", LocationType::Consumer, { 450.797f, -89.618f });
     auto consJapan = addLocation("Japan", LocationType::Consumer, { 754.319f, -197.049f });
@@ -57,7 +57,7 @@ namespace no {
     auto oilSaudi = addLocation("Saudi Arabia", LocationType::OilSource, { 256.565f, -105.903f });
     auto oilIraq = addLocation("Iraq", LocationType::OilSource, { 194.92f, -197.917f });
     auto oilAlgeria = addLocation("Algeria", LocationType::OilSource, { -56.0014f, -140.625f });
-    auto oilNigeria = addLocation("Nigeria", LocationType::OilSource, { -25.613f, 36.4583f });
+    auto oilNigeria = addSourceLocation("Nigeria", LocationType::OilSource, { -25.613f, 36.4583f }, 1.0f);
     auto oilNothSea = addLocation("North Sea", LocationType::OilSource, { -73.3661f, -371.528f });
     auto oilAlaska = addLocation("Alaska", LocationType::OilSource, { -788.18f, -410.799f });
     auto oilCanada = addLocation("Canada", LocationType::OilSource, { -698.752f, -323.993f });
@@ -492,7 +492,45 @@ namespace no {
 
   std::size_t Globe::addLocation(std::string name, LocationType type, gf::Vector2f pos) {
     std::size_t id = m_locations.size();
-    m_locations.push_back({ std::move(name), type, pos, false });
+    Location loc;
+    loc.name = std::move(name);
+    loc.type = type;
+    loc.position = pos;
+    loc.isBuild = false;
+
+    m_locations.push_back(std::move(loc));
+    return id;
+  }
+
+  std::size_t Globe::addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor) {
+    std::size_t id = m_locations.size();
+    Location loc;
+    loc.name = std::move(name);
+    loc.type = LocationType::Consumer;
+    loc.position = pos;
+    loc.isBuild = false;
+    loc.consumerData.oilConsumption = BaseOilConsumption * oilConsumptionFactor;
+    loc.consumerData.oilPrice = BasePriceOil * oilPriceFactor;
+
+    m_locations.push_back(std::move(loc));
+    return id;
+  }
+  std::size_t Globe::addSourceLocation(std::string name, LocationType type, gf::Vector2f pos, float ResourceProductionFactor) {
+    std::size_t id = m_locations.size();
+    Location loc;
+    loc.name = std::move(name);
+    loc.type = type;
+    loc.position = pos;
+    loc.isBuild = false;
+
+    if (type == LocationType::OilSource) {
+      loc.sourceData.resourceProduction = BaseOilProduction * ResourceProductionFactor;
+    }
+    else {
+      assert(false);
+    }
+
+    m_locations.push_back(std::move(loc));
     return id;
   }
 
