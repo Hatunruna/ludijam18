@@ -40,15 +40,15 @@ namespace no {
      */
 
     auto consEurope = addConsumerLocation("Europe", { -44.7143f, -270.833f }, 1.0f, 1.0f);
-    auto consRussia = addLocation("Russia", LocationType::Consumer, { 158.426f, -298.9f });
-    auto consUsaEastCoast = addLocation("USA, East Coast", LocationType::Consumer, { -545.688f, -200.521f });
-    auto consUsaWestCoast = addLocation("USA, West Coast", LocationType::Consumer, { -807.028f, -222.222f });
-    auto consBrazil = addConsumerLocation("Brazil", { -327.507f, 141.493f }, 0.5f, 0.5f);
-    auto consSouthAfrica = addLocation("South Africa", LocationType::Consumer, { 75.3562f, 283.854f });
-    auto consIndia = addLocation("India", LocationType::Consumer, { 450.797f, -89.618f });
-    auto consJapan = addLocation("Japan", LocationType::Consumer, { 754.319f, -197.049f });
-    auto consChina = addLocation("China", LocationType::Consumer, { 649.008f, -133.681f });
-    auto consAustralia = addLocation("Australia", LocationType::Consumer, { 838.538f, 270.833f });
+    auto consRussia = addConsumerLocation("Russia", { 158.426f, -298.9f }, 1.0f, 1.0f);
+    auto consUsaEastCoast = addConsumerLocation("USA, East Coast", { -545.688f, -200.521f }, 1.0f, 1.0f);
+    auto consUsaWestCoast = addConsumerLocation("USA, West Coast", { -807.028f, -222.222f }, 1.0f, 1.0f);
+    auto consBrazil = addConsumerLocation("Brazil", { -327.507f, 141.493f }, 1.0f, 1.0f);
+    auto consSouthAfrica = addConsumerLocation("South Africa", { 75.3562f, 283.854f }, 1.0f, 1.0f);
+    auto consIndia = addConsumerLocation("India", { 450.797f, -89.618f }, 1.0f, 1.0f);
+    auto consJapan = addConsumerLocation("Japan", { 754.319f, -197.049f }, 1.0f, 1.0f);
+    auto consChina = addConsumerLocation("China", { 649.008f, -133.681f }, 1.0f, 1.0f);
+    auto consAustralia = addConsumerLocation("Australia", { 838.538f, 270.833f }, 1.0f, 1.0f);
 
     /*
      * oil sources
@@ -316,14 +316,14 @@ namespace no {
 
       // Discard the overflow
       if (realConsumption > consumer.consumerData.oilConsumption) {
-        gf::Log::debug("%s waste %f\n", consumer.name.c_str(), realConsumption-consumer.consumerData.oilConsumption);
+        // gf::Log::debug("%s waste %f\n", consumer.name.c_str(), realConsumption-consumer.consumerData.oilConsumption);
         realConsumption = consumer.consumerData.oilConsumption;
       }
 
       // Compute the price
       balance += realConsumption * consumer.consumerData.oilPrice * time.asSeconds();
 
-      gf::Log::debug("%s profit %f\n", consumer.name.c_str(), realConsumption * consumer.consumerData.oilPrice * time.asSeconds());
+      // gf::Log::debug("%s profit %f\n", consumer.name.c_str(), realConsumption * consumer.consumerData.oilPrice * time.asSeconds());
     }
 
     BalanceOperation operation;
