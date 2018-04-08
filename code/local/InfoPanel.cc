@@ -35,9 +35,12 @@ namespace no {
   , m_font(gResourceManager().getFont("liberation-sans.ttf"))
   , m_currentCharacterSize(14)
   , m_ui(m_font, m_currentCharacterSize)
+  , m_display(Display::None)
   {
     // Messages handlers
     gMessageManager().registerHandler<BalanceOperation>(&InfoPanel::onBalanceOperation, this);
+    gMessageManager().registerHandler<DisplaySource>(&InfoPanel::onDisplaySource, this);
+    gMessageManager().registerHandler<DisplayNone>(&InfoPanel::onDisplayNone, this);
   }
 
   void InfoPanel::processEvent(const gf::Event& event) {
@@ -70,6 +73,18 @@ namespace no {
     gf::Vector2f infoSize = coordinates.getRelativeSize({ 0.2f, 0.5f });
 
     if (m_ui.begin("NO Inc. Info", gf::RectF(infoPosition, infoSize), gf::UIWindow::Title | gf::UIWindow::Border)) {
+      switch (m_display) {
+        case Display::Source:
+          m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.5f, 0.5f });
+          m_ui.label("Name:");
+          m_ui.label(m_source.name);
+          m_ui.label("Production:");
+          m_ui.label(gf::niceNum(m_source.resourceProduction, 0.1f));
+          break;
+
+        case Display::None:
+          break;
+      }
 
     }
 
@@ -95,6 +110,19 @@ namespace no {
 
     m_balance += operation->value;
 
+    return gf::MessageStatus::Keep;
+  }
+
+  gf::MessageStatus InfoPanel::onDisplayNone(gf::Id id, gf::Message *msg) {
+    assert(id == DisplayNone::type);
+    m_display = Display::None;
+    return gf::MessageStatus::Keep;
+  }
+
+  gf::MessageStatus InfoPanel::onDisplaySource(gf::Id id, gf::Message *msg) {
+    assert(id == DisplaySource::type);
+    m_display = Display::Source;
+    m_source = *static_cast<DisplaySource *>(msg);
     return gf::MessageStatus::Keep;
   }
 

@@ -81,10 +81,15 @@ namespace no {
     float value;
   };
 
+  struct DisplayNone : public gf::Message {
+    static constexpr gf::Id type = "DisplayNone"_id;
+  };
+
   struct DisplaySource : public gf::Message {
     static constexpr gf::Id type = "DisplaySource"_id;
 
     std::string name;
+    float resourceProduction;
   };
 
 }

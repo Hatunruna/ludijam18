@@ -35,7 +35,10 @@ namespace no {
     virtual void update(gf::Time time) override;
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
+  private:
     gf::MessageStatus onBalanceOperation(gf::Id id, gf::Message *msg);
+    gf::MessageStatus onDisplayNone(gf::Id id, gf::Message *msg);
+    gf::MessageStatus onDisplaySource(gf::Id id, gf::Message *msg);
 
   private:
     float m_balance;
@@ -43,6 +46,15 @@ namespace no {
 
     unsigned m_currentCharacterSize;
     gf::UI m_ui;
+
+    enum class Display {
+      None,
+      Source,
+    };
+
+    Display m_display;
+    DisplaySource m_source;
+
   };
 
 }

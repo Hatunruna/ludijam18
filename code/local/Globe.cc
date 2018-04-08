@@ -481,23 +481,28 @@ namespace no {
         switch (location.type) {
           case LocationType::OilSource:
           case LocationType::UraniumSource:
+            {
+              DisplaySource message;
+              message.name = location.name;
+              message.resourceProduction = location.sourceData.resourceProduction;
 
-            break;
+              gMessageManager().sendMessage(&message);
+            }
+
+            return gf::MessageStatus::Keep;
 
           default:
-            query->isValid = false;
             break;
         }
-
-
-        gf::Log::debug("Info of : %s\n", m_locations[i].name.c_str());
-        gf::Log::debug("Display something\n");
-        gf::Log::debug("DO IT! JUST DO IT!\n");
-        gf::Log::debug("\n");
 
         break;
       }
     }
+
+    query->isValid = false;
+
+    DisplayNone message;
+    gMessageManager().sendMessage(&message);
 
     return gf::MessageStatus::Keep;
   }
