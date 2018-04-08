@@ -81,6 +81,12 @@ namespace no {
     float value;
   };
 
+  struct DisplaySource : public gf::Message {
+    static constexpr gf::Id type = "DisplaySource"_id;
+
+    std::string name;
+  };
+
 }
 
 #endif // NO_MESSAGES_H
