@@ -20,6 +20,7 @@
 #include <gf/Coordinates.h>
 #include <gf/RenderTarget.h>
 #include <gf/Text.h>
+#include <gf/StringUtils.h>
 
 #include "Messages.h"
 #include "Singletons.h"
@@ -41,7 +42,7 @@ namespace no {
     gf::Coordinates coordinates(target);
 
     auto fontSize = coordinates.getRelativeCharacterSize(0.05f);
-    gf::Text text("$ " + std::to_string(m_balance), m_font, fontSize);
+    gf::Text text("$ " + gf::niceNum(m_balance, 0.01f), m_font, fontSize);
     text.setColor(gf::Color::White);
     text.setOutlineColor(gf::Color::Black);
     text.setOutlineThickness(fontSize * 0.02f);

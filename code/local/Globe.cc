@@ -267,11 +267,17 @@ namespace no {
     // Compute maintenance charge
     for (auto &location: m_locations) {
       if (location.isBuild && (location.type == LocationType::OilSource || location.type == LocationType::UraniumSource)) {
-        balance += -MaintenanceCharge * time.asSeconds();
+        balance += -BuildingCharge * time.asSeconds();
       }
     }
 
-    // TODO add profit form export path
+    // For all active routes
+    for (auto &exportPath: m_exportPaths) {
+      for (std::size_t i = 1; i < exportPath.size(); ++i) {
+        auto route = findRoute(exportPath[i-1], exportPath[i]);
+        balance += -route.charge * time.asSeconds();
+      }
+    }
 
     BalanceOperation operation;
     operation.value = balance;
@@ -495,7 +501,7 @@ namespace no {
   }
 
   void Globe::addRoute(std::size_t endPoint0, std::size_t endPoint1) {
-    m_routes.push_back({ endPoint0, endPoint1 });
+    m_routes.push_back({ endPoint0, endPoint1, RouteCharge });
   }
 
   bool Globe::isValidRoute(std::size_t endPoint0, std::size_t endPoint1) {
@@ -521,6 +527,19 @@ namespace no {
       line.setOutlineColor(gf::Color::Black);
       target.draw(line);
     }
+  }
+
+  Globe::Route Globe::findRoute(std::size_t endPoint0, std::size_t endPoint1) {
+    for (std::size_t i = 0; i < m_routes.size(); ++i) {
+      auto &route = m_routes[i];
+
+      if ((route.endPoint0 == endPoint0 && route.endPoint1 == endPoint1) || (route.endPoint0 == endPoint1 && route.endPoint1 == endPoint0)) {
+        return route;
+      }
+    }
+
+    assert(false);
+    return { 0, 0, 0.0f };
   }
 
 }

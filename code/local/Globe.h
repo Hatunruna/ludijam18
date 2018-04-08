@@ -59,6 +59,7 @@ namespace no {
     struct Route {
       std::size_t endPoint0;
       std::size_t endPoint1;
+      float charge;
     };
 
   private:
@@ -67,6 +68,7 @@ namespace no {
     void addRoute(std::size_t endPoint0, std::size_t endPoint1);
     bool isValidRoute(std::size_t endPoint0, std::size_t endPoint1);
     void drawPath(gf::RenderTarget& target, ExportPath &path);
+    Route findRoute(std::size_t endPoint0, std::size_t endPoint1);
 
   private:
     std::vector<Location> m_locations;
