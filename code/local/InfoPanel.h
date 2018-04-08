@@ -20,14 +20,17 @@
 
 #include <gf/Entity.h>
 #include <gf/Font.h>
+#include <gf/UI.h>
 
 #include "Messages.h"
 
 namespace no {
 
-  class Account: public gf::Entity {
+  class InfoPanel: public gf::Entity {
   public:
-    Account();
+    InfoPanel();
+
+    void processEvent(const gf::Event& event);
 
     virtual void update(gf::Time time) override;
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
@@ -37,6 +40,9 @@ namespace no {
   private:
     float m_balance;
     gf::Font &m_font;
+
+    unsigned m_currentCharacterSize;
+    gf::UI m_ui;
   };
 
 }

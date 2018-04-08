@@ -61,7 +61,7 @@ int main() {
   gf::ViewContainer views;
 
   gf::ExtendView mainView(ViewCenter, ViewSize);
-  mainView.setViewport({0.075f, 0.0f, 0.925f, 1.0f});
+  mainView.setViewport({0.075f, 0.0f, 0.725f, 1.0f});
   views.addView(mainView);
 
   gf::ScreenView hudView;
@@ -124,8 +124,8 @@ int main() {
   no::BuildMenu buildMenu;
   hudEntities.addEntity(buildMenu);
 
-  no::Account account;
-  hudEntities.addEntity(account);
+  no::InfoPanel infoPanel;
+  hudEntities.addEntity(infoPanel);
 
   // game loop
 
@@ -142,6 +142,7 @@ int main() {
       actions.processEvent(event);
       views.processEvent(event);
       adaptor.processEvent(event);
+      infoPanel.processEvent(event);
 
       switch (event.type) {
         case gf::EventType::MouseMoved:
