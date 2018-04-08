@@ -18,6 +18,8 @@
 #ifndef NO_GLOBE_H
 #define NO_GLOBE_H
 
+#include <map>
+
 #include <gf/Entity.h>
 #include <gf/Event.h>
 #include <gf/Texture.h>
@@ -26,8 +28,6 @@
 #include "Messages.h"
 
 namespace no {
-
-  using ExportPath = std::vector<std::size_t>;
 
   class Globe : public gf::Entity {
   public:
@@ -75,6 +75,22 @@ namespace no {
       float charge;
     };
 
+    struct ExportPath {
+      std::vector<std::size_t> waypoints;
+      float quantity;
+      float charge;
+      gf::Time delay;
+      float totalLenght;
+
+      void clear() {
+        waypoints.clear();
+        quantity = 0.0f;
+        charge = 0.0f;
+        delay = gf::Time::zero();
+        totalLenght = 0.0f;
+      }
+    };
+
   private:
     std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
     std::size_t addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor);
@@ -92,7 +108,8 @@ namespace no {
     std::vector<Route> m_routes;
 
     // Definitive route
-    std::vector<ExportPath> m_exportPaths;
+    std::size_t m_nextIDPath;
+    std::map<std::size_t, ExportPath> m_exportPaths;
 
     // Temporary route
     ExportPath m_tempRoute;
