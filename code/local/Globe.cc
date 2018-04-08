@@ -272,15 +272,10 @@ namespace no {
       }
     }
 
-    // For all active routes
+    // For all active routes, we get the charge
     for (auto &entry: m_exportPaths) {
       ExportPath &exportPath = entry.second;
-      std::vector<std::size_t> &waypoints = exportPath.waypoints;
-
-      for (std::size_t i = 1; i < waypoints.size(); ++i) {
-        auto route = findRoute(waypoints[i-1], waypoints[i]);
-        balance += -route.charge * time.asSeconds();
-      }
+      balance += -exportPath.charge * time.asSeconds();
     }
 
     BalanceOperation operation;
@@ -446,6 +441,10 @@ namespace no {
       else if (circle.contains(query->position) && isValidRoute(previousLocation, i)) {
         query->isValid = true;
         query->isEnded = location.type == LocationType::Consumer;
+
+        // Update the charge
+        Route route = findRoute(m_tempRoute.waypoints.back(), i);
+        m_tempRoute.charge += route.charge;
 
         m_tempRoute.waypoints.push_back(i);
 
