@@ -165,10 +165,7 @@ namespace no {
         query.isValid = false;
         gMessageManager().sendMessage(&query);
 
-        if (query.isValid) {
-          m_state = State::Idle;
-        }
-        else { // To allow change building without select and build in one clic
+        if (!query.isValid) {
           m_widgets.triggerAction();
         }
       }
