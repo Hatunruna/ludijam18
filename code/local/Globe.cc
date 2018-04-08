@@ -30,7 +30,8 @@
 namespace no {
 
   Globe::Globe()
-  : m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
+  : m_nextIDPath(0)
+  , m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
   , m_uraniumMiningTexture(gResourceManager().getTexture("uranium-mining.png"))
   {
 
@@ -272,9 +273,12 @@ namespace no {
     }
 
     // For all active routes
-    for (auto &exportPath: m_exportPaths) {
-      for (std::size_t i = 1; i < exportPath.size(); ++i) {
-        auto route = findRoute(exportPath[i-1], exportPath[i]);
+    for (auto &entry: m_exportPaths) {
+      ExportPath &exportPath = entry.second;
+      std::vector<std::size_t> &waypoints = exportPath.waypoints;
+
+      for (std::size_t i = 1; i < waypoints.size(); ++i) {
+        auto route = findRoute(waypoints[i-1], waypoints[i]);
         balance += -route.charge * time.asSeconds();
       }
     }
@@ -300,12 +304,12 @@ namespace no {
     }
 
     // Draw active route
-    for (auto &path: m_exportPaths) {
-      drawPath(target, path);
+    for (auto &entry: m_exportPaths) {
+      drawPath(target, entry.second);
     }
 
     // Draw the temporary path
-    if (m_tempRoute.size() > 0) {
+    if (m_tempRoute.waypoints.size() > 0) {
       drawPath(target, m_tempRoute);
     }
 
@@ -410,7 +414,7 @@ namespace no {
       if ((location.type == LocationType::OilSource || location.type == LocationType::UraniumSource) && location.isBuild && circle.contains(query->position)) {
         query->isValid = true;
         m_tempRoute.clear();
-        m_tempRoute.push_back(i);
+        m_tempRoute.waypoints.push_back(i);
 
         break;
       }
@@ -425,19 +429,17 @@ namespace no {
 
     static constexpr float WaypointHitbox = 10.0f;
 
-
-
     // Check if the build is valid
     for (std::size_t i = 0; i < m_locations.size(); ++i) {
       auto &location = m_locations[i];
 
       // Create circle to check position
       gf::CircF circle(location.position, WaypointHitbox);
-      std::size_t previousLocation = m_tempRoute.back();
+      std::size_t previousLocation = m_tempRoute.waypoints.back();
       if (circle.contains(query->position) && previousLocation == i) {
         query->isValid = true;
         query->isEnded = false;
-        m_tempRoute.pop_back();
+        m_tempRoute.waypoints.pop_back();
 
         break;
       }
@@ -445,10 +447,11 @@ namespace no {
         query->isValid = true;
         query->isEnded = location.type == LocationType::Consumer;
 
-        m_tempRoute.push_back(i);
+        m_tempRoute.waypoints.push_back(i);
 
         if (query->isEnded) {
-          m_exportPaths.push_back(m_tempRoute);
+          m_exportPaths.emplace(std::pair<std::size_t, ExportPath>(m_nextIDPath, m_tempRoute));
+          ++m_nextIDPath;
 
           m_tempRoute.clear();
         }
@@ -584,9 +587,9 @@ namespace no {
   }
 
   void Globe::drawPath(gf::RenderTarget& target, ExportPath &path) {
-    for (std::size_t i = 0; i < path.size() - 1; ++i) {
-      auto end0Pos = m_locations[path[i]].position;
-      auto end1Pos = m_locations[path[i + 1]].position;
+    for (std::size_t i = 0; i < path.waypoints.size() - 1; ++i) {
+      auto end0Pos = m_locations[path.waypoints[i]].position;
+      auto end1Pos = m_locations[path.waypoints[i + 1]].position;
       gf::Line line(end0Pos, end1Pos);
       line.setColor(gf::Color::White);
       line.setWidth(3.0f);
@@ -607,6 +610,32 @@ namespace no {
 
     assert(false);
     return { 0, 0, 0.0f };
+  }
+
+  std::vector<Globe::Location> Globe::findConsumersFormSource(std::size_t id) {
+    std::vector<Location> consumers;
+
+    for (auto &entry: m_exportPaths) {
+      ExportPath &exportPath = entry.second;
+      if (exportPath.waypoints.front() == id) {
+        consumers.push_back(m_locations[exportPath.waypoints.back()]);
+      }
+    }
+
+    return consumers;
+  }
+
+  std::vector<Globe::Location> Globe::findSourcesFormConsumer(std::size_t id) {
+    std::vector<Location> sources;
+
+    for (auto &entry: m_exportPaths) {
+      ExportPath &exportPath = entry.second;
+      if (exportPath.waypoints.back() == id) {
+        sources.push_back(m_locations[exportPath.waypoints.front()]);
+      }
+    }
+
+    return sources;
   }
 
 }

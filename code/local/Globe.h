@@ -18,6 +18,8 @@
 #ifndef NO_GLOBE_H
 #define NO_GLOBE_H
 
+#include <map>
+
 #include <gf/Entity.h>
 #include <gf/Event.h>
 #include <gf/Texture.h>
@@ -26,8 +28,6 @@
 #include "Messages.h"
 
 namespace no {
-
-  using ExportPath = std::vector<std::size_t>;
 
   class Globe : public gf::Entity {
   public:
@@ -75,6 +75,22 @@ namespace no {
       float charge;
     };
 
+    struct ExportPath {
+      std::vector<std::size_t> waypoints;
+      float quantity;
+      float charge;
+      gf::Time delay;
+      float totalLenght;
+
+      void clear() {
+        waypoints.clear();
+        quantity = 0.0f;
+        charge = 0.0f;
+        delay = gf::Time::zero();
+        totalLenght = 0.0f;
+      }
+    };
+
   private:
     std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
     std::size_t addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor);
@@ -84,15 +100,16 @@ namespace no {
     bool isValidRoute(std::size_t endPoint0, std::size_t endPoint1);
     void drawPath(gf::RenderTarget& target, ExportPath &path);
     Route findRoute(std::size_t endPoint0, std::size_t endPoint1);
-    // std::vector<Location> findConsumersFormSource(std::size_t id);
-    // std::vector<Location> findConsumersFormSource(std::size_t id);
+    std::vector<Location> findConsumersFormSource(std::size_t id);
+    std::vector<Location> findSourcesFormConsumer(std::size_t id);
 
   private:
     std::vector<Location> m_locations;
     std::vector<Route> m_routes;
 
     // Definitive route
-    std::vector<ExportPath> m_exportPaths;
+    std::size_t m_nextIDPath;
+    std::map<std::size_t, ExportPath> m_exportPaths;
 
     // Temporary route
     ExportPath m_tempRoute;
