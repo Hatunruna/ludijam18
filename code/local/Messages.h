@@ -92,6 +92,14 @@ namespace no {
     float resourceProduction;
   };
 
+  struct DisplayConsumer : public gf::Message {
+    static constexpr gf::Id type = "DisplayConsumer"_id;
+
+    std::string name;
+    float oilConsumption;
+    float oilPrice;
+  };
+
 }
 
 #endif // NO_MESSAGES_H

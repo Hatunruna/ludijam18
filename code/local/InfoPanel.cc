@@ -39,8 +39,9 @@ namespace no {
   {
     // Messages handlers
     gMessageManager().registerHandler<BalanceOperation>(&InfoPanel::onBalanceOperation, this);
-    gMessageManager().registerHandler<DisplaySource>(&InfoPanel::onDisplaySource, this);
     gMessageManager().registerHandler<DisplayNone>(&InfoPanel::onDisplayNone, this);
+    gMessageManager().registerHandler<DisplaySource>(&InfoPanel::onDisplaySource, this);
+    gMessageManager().registerHandler<DisplayConsumer>(&InfoPanel::onDisplayConsumer, this);
   }
 
   void InfoPanel::processEvent(const gf::Event& event) {
@@ -80,6 +81,23 @@ namespace no {
           m_ui.label(m_source.name);
           m_ui.label("Production:");
           m_ui.label(gf::niceNum(m_source.resourceProduction, 0.1f));
+          break;
+
+        case Display::Consumer:
+          m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.3f, 0.7f });
+          m_ui.label("Name:");
+          m_ui.label(m_consumer.name);
+
+          m_ui.separator(height / 2);
+
+          m_ui.layoutRowDynamic(height, 1);
+          m_ui.label("Oil", gf::UIAlignment::Center);
+
+          m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.6f, 0.4f });
+          m_ui.label("Consumption:");
+          m_ui.label(gf::niceNum(m_consumer.oilConsumption, 0.1f));
+          m_ui.label("Price:");
+          m_ui.label(gf::niceNum(m_consumer.oilPrice, 0.2f));
           break;
 
         case Display::None:
@@ -126,4 +144,10 @@ namespace no {
     return gf::MessageStatus::Keep;
   }
 
+  gf::MessageStatus InfoPanel::onDisplayConsumer(gf::Id id, gf::Message *msg) {
+    assert(id == DisplayConsumer::type);
+    m_display = Display::Consumer;
+    m_consumer = *static_cast<DisplayConsumer *>(msg);
+    return gf::MessageStatus::Keep;
+  }
 }

@@ -491,6 +491,18 @@ namespace no {
 
             return gf::MessageStatus::Keep;
 
+          case LocationType::Consumer:
+            {
+              DisplayConsumer message;
+              message.name = location.name;
+              message.oilConsumption = location.consumerData.oilConsumption;
+              message.oilPrice = location.consumerData.oilPrice;
+
+              gMessageManager().sendMessage(&message);
+            }
+
+            return gf::MessageStatus::Keep;
+
           default:
             break;
         }

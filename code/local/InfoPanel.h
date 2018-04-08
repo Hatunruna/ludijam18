@@ -39,6 +39,7 @@ namespace no {
     gf::MessageStatus onBalanceOperation(gf::Id id, gf::Message *msg);
     gf::MessageStatus onDisplayNone(gf::Id id, gf::Message *msg);
     gf::MessageStatus onDisplaySource(gf::Id id, gf::Message *msg);
+    gf::MessageStatus onDisplayConsumer(gf::Id id, gf::Message *msg);
 
   private:
     float m_balance;
@@ -50,10 +51,12 @@ namespace no {
     enum class Display {
       None,
       Source,
+      Consumer,
     };
 
     Display m_display;
     DisplaySource m_source;
+    DisplayConsumer m_consumer;
 
   };
 
