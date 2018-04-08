@@ -580,4 +580,28 @@ namespace no {
     return { 0, 0, 0.0f };
   }
 
+  std::vector<Globe::Location> Globe::findConsumersFormSource(std::size_t id) {
+    std::vector<Location> consumers;
+
+    for (auto &exportPath: m_exportPaths) {
+      if (exportPath.front() == id) {
+        consumers.push_back(m_locations[exportPath.back()]);
+      }
+    }
+
+    return consumers;
+  }
+
+  std::vector<Globe::Location> Globe::findSourcesFormConsumer(std::size_t id) {
+    std::vector<Location> sources;
+
+    for (auto &exportPath: m_exportPaths) {
+      if (exportPath.back() == id) {
+        sources.push_back(m_locations[exportPath.front()]);
+      }
+    }
+
+    return sources;
+  }
+
 }

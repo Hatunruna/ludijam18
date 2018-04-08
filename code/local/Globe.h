@@ -84,8 +84,8 @@ namespace no {
     bool isValidRoute(std::size_t endPoint0, std::size_t endPoint1);
     void drawPath(gf::RenderTarget& target, ExportPath &path);
     Route findRoute(std::size_t endPoint0, std::size_t endPoint1);
-    // std::vector<Location> findConsumersFormSource(std::size_t id);
-    // std::vector<Location> findConsumersFormSource(std::size_t id);
+    std::vector<Location> findConsumersFormSource(std::size_t id);
+    std::vector<Location> findSourcesFormConsumer(std::size_t id);
 
   private:
     std::vector<Location> m_locations;
