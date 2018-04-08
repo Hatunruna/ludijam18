@@ -60,6 +60,9 @@ namespace no {
         struct {
           float oilConsumption;
           float oilPrice;
+
+          float uraniumConsumption;
+          float uraniumPrice;
         } consumerData;
 
         // Sources
@@ -93,7 +96,7 @@ namespace no {
 
   private:
     std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
-    std::size_t addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor);
+    std::size_t addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor, float uraniumConsumptionFactor, float uraniumPriceFactor);
     std::size_t addSourceLocation(std::string name, LocationType type, gf::Vector2f pos, float ResourceProductionFactor);
     std::size_t addAnonymousLocation(gf::Vector2f pos);
     void addRoute(std::size_t endPoint0, std::size_t endPoint1);
@@ -102,6 +105,8 @@ namespace no {
     Route findRoute(std::size_t endPoint0, std::size_t endPoint1);
     std::vector<ExportPath> findExportFormSource(std::size_t id);
     std::vector<ExportPath> findExportFormConsumer(std::size_t id);
+
+    std::map<std::size_t, float> computeConsumation(LocationType type);
 
   private:
     std::vector<Location> m_locations;

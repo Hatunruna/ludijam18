@@ -39,16 +39,16 @@ namespace no {
      * consumers
      */
 
-    auto consEurope = addConsumerLocation("Europe", { -44.7143f, -270.833f }, 1.0f, 1.0f);
-    auto consRussia = addConsumerLocation("Russia", { 158.426f, -298.9f }, 1.0f, 1.0f);
-    auto consUsaEastCoast = addConsumerLocation("USA, East Coast", { -545.688f, -200.521f }, 1.0f, 1.0f);
-    auto consUsaWestCoast = addConsumerLocation("USA, West Coast", { -807.028f, -222.222f }, 1.0f, 1.0f);
-    auto consBrazil = addConsumerLocation("Brazil", { -327.507f, 141.493f }, 1.0f, 1.0f);
-    auto consSouthAfrica = addConsumerLocation("South Africa", { 75.3562f, 283.854f }, 1.0f, 1.0f);
-    auto consIndia = addConsumerLocation("India", { 450.797f, -89.618f }, 1.0f, 1.0f);
-    auto consJapan = addConsumerLocation("Japan", { 754.319f, -197.049f }, 1.0f, 1.0f);
-    auto consChina = addConsumerLocation("China", { 649.008f, -133.681f }, 1.0f, 1.0f);
-    auto consAustralia = addConsumerLocation("Australia", { 838.538f, 270.833f }, 1.0f, 1.0f);
+    auto consEurope = addConsumerLocation("Europe", { -44.7143f, -270.833f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consRussia = addConsumerLocation("Russia", { 158.426f, -298.9f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consUsaEastCoast = addConsumerLocation("USA, East Coast", { -545.688f, -200.521f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consUsaWestCoast = addConsumerLocation("USA, West Coast", { -807.028f, -222.222f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consBrazil = addConsumerLocation("Brazil", { -327.507f, 141.493f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consSouthAfrica = addConsumerLocation("South Africa", { 75.3562f, 283.854f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consIndia = addConsumerLocation("India", { 450.797f, -89.618f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consJapan = addConsumerLocation("Japan", { 754.319f, -197.049f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consChina = addConsumerLocation("China", { 649.008f, -133.681f }, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto consAustralia = addConsumerLocation("Australia", { 838.538f, 270.833f }, 1.0f, 1.0f, 1.0f, 1.0f);
 
     /*
      * oil sources
@@ -79,12 +79,12 @@ namespace no {
      * uranium sources
      */
 
-    auto urKazakhstan = addLocation("Kazakhstan", LocationType::UraniumSource, { 352.071f, -250.868f });
-    auto urCanada = addLocation("Canada", LocationType::UraniumSource, { -497.935f, -286.458f });
-    auto urAustralia = addLocation("Australia", LocationType::UraniumSource, { 766.474f, 296.007f });
-    auto urNiger = addLocation("Niger", LocationType::UraniumSource, { -20.1503f, -46.007f });
-    auto urRussia = addLocation("Russia", LocationType::UraniumSource, { 117.032f, -358.507f });
-    auto urNamiba = addLocation("Namibia", LocationType::UraniumSource, { 28.4711f, 214.41f });
+    auto urKazakhstan = addSourceLocation("Kazakhstan", LocationType::UraniumSource, { 352.071f, -250.868f }, 1.0f);
+    auto urCanada = addSourceLocation("Canada", LocationType::UraniumSource, { -497.935f, -286.458f }, 1.0f);
+    auto urAustralia = addSourceLocation("Australia", LocationType::UraniumSource, { 766.474f, 296.007f }, 1.0f);
+    auto urNiger = addSourceLocation("Niger", LocationType::UraniumSource, { -20.1503f, -46.007f }, 1.0f);
+    auto urRussia = addSourceLocation("Russia", LocationType::UraniumSource, { 117.032f, -358.507f }, 1.0f);
+    auto urNamiba = addSourceLocation("Namibia", LocationType::UraniumSource, { 28.4711f, 214.41f }, 1.0f);
 
     /*
      * route points
@@ -279,34 +279,8 @@ namespace no {
     }
 
     // Compute consumation for each consumers
-    std::map<std::size_t, float> oilConsumption;
-    for (std::size_t i = 0; i < m_locations.size(); ++i) {
-      Location &source = m_locations[i];
-      // If it's a oil source
-      if (source.type == LocationType::OilSource && source.isBuild) {
-        // For each path form the source we get the export
-        // to add the quantity to consumer and keep this in memory
-        auto exportPaths = findExportFormSource(i);
-        for (auto &exportPath: exportPaths) {
-          // Get the id of consumers
-          std::size_t consumerID = exportPath.waypoints.back();
-
-          // If he is in memory
-          auto search = oilConsumption.find(consumerID);
-          if(search != oilConsumption.end()) {
-            // TODO: delete next and uncomment the second next
-            search->second += source.sourceData.resourceProduction;
-            // search->second += exportPath.quantity;
-          }
-          // Else we create the entry
-          else {
-            // TODO: delete next and uncomment the second next
-            oilConsumption.emplace(std::pair<std::size_t, float>(consumerID, source.sourceData.resourceProduction));
-            // oilConsumption.emplace(std::pair<std::size_t, float>(consumerID, exportPath.quantity));
-          }
-        }
-      }
-    }
+    auto oilConsumption = computeConsumation(LocationType::OilSource);
+    auto uraniumConsumption = computeConsumation(LocationType::UraniumSource);
 
     // Compute oil profit
     for (auto &entry: oilConsumption) {
@@ -322,6 +296,24 @@ namespace no {
 
       // Compute the price
       balance += realConsumption * consumer.consumerData.oilPrice * time.asSeconds();
+
+      // gf::Log::debug("%s profit %f\n", consumer.name.c_str(), realConsumption * consumer.consumerData.oilPrice * time.asSeconds());
+    }
+
+    // Compute uranium profit
+    for (auto &entry: uraniumConsumption) {
+      std::size_t key = entry.first;
+      float realConsumption = entry.second;
+      Location consumer = m_locations[key];
+
+      // Discard the overflow
+      if (realConsumption > consumer.consumerData.uraniumConsumption) {
+        // gf::Log::debug("%s waste %f\n", consumer.name.c_str(), realConsumption-consumer.consumerData.oilConsumption);
+        realConsumption = consumer.consumerData.uraniumConsumption;
+      }
+
+      // Compute the price
+      balance += realConsumption * consumer.consumerData.uraniumPrice * time.asSeconds();
 
       // gf::Log::debug("%s profit %f\n", consumer.name.c_str(), realConsumption * consumer.consumerData.oilPrice * time.asSeconds());
     }
@@ -581,7 +573,7 @@ namespace no {
     return id;
   }
 
-  std::size_t Globe::addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor) {
+  std::size_t Globe::addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor, float uraniumConsumptionFactor, float uraniumPriceFactor) {
     std::size_t id = m_locations.size();
     Location loc;
     loc.name = std::move(name);
@@ -590,6 +582,8 @@ namespace no {
     loc.isBuild = false;
     loc.consumerData.oilConsumption = BaseOilConsumption * oilConsumptionFactor;
     loc.consumerData.oilPrice = BasePriceOil * oilPriceFactor;
+    loc.consumerData.uraniumConsumption = BaseUraniumConsumption * uraniumConsumptionFactor;
+    loc.consumerData.uraniumPrice = BasePriceUranium * uraniumPriceFactor;
 
     m_locations.push_back(std::move(loc));
     return id;
@@ -604,6 +598,9 @@ namespace no {
 
     if (type == LocationType::OilSource) {
       loc.sourceData.resourceProduction = BaseOilProduction * ResourceProductionFactor;
+    }
+    else if (type == LocationType::UraniumSource) {
+      loc.sourceData.resourceProduction = BaseUraniumProduction * ResourceProductionFactor;
     }
     else {
       assert(false);
@@ -683,6 +680,41 @@ namespace no {
     }
 
     return paths;
+  }
+
+  std::map<std::size_t, float> Globe::computeConsumation(Globe::LocationType type) {
+    assert(type == LocationType::OilSource || type == LocationType::UraniumSource);
+
+    std::map<std::size_t, float> consumption;
+    for (std::size_t i = 0; i < m_locations.size(); ++i) {
+      Location &source = m_locations[i];
+      // If it's a oil source
+      if (source.type == type && source.isBuild) {
+        // For each path form the source we get the export
+        // to add the quantity to consumer and keep this in memory
+        auto exportPaths = findExportFormSource(i);
+        for (auto &exportPath: exportPaths) {
+          // Get the id of consumers
+          std::size_t consumerID = exportPath.waypoints.back();
+
+          // If he is in memory
+          auto search = consumption.find(consumerID);
+          if(search != consumption.end()) {
+            // TODO: delete next and uncomment the second next
+            search->second += source.sourceData.resourceProduction;
+            // search->second += exportPath.quantity;
+          }
+          // Else we create the entry
+          else {
+            // TODO: delete next and uncomment the second next
+            consumption.emplace(std::pair<std::size_t, float>(consumerID, source.sourceData.resourceProduction));
+            // oilConsumption.emplace(std::pair<std::size_t, float>(consumerID, exportPath.quantity));
+          }
+        }
+      }
+    }
+
+    return consumption;
   }
 
 }
