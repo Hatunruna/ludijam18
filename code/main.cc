@@ -20,6 +20,7 @@
 #include <gf/Action.h>
 #include <gf/Clock.h>
 #include <gf/Color.h>
+#include <gf/Cursor.h>
 #include <gf/EntityContainer.h>
 #include <gf/Event.h>
 #include <gf/RenderWindow.h>
@@ -45,6 +46,10 @@ int main() {
   gf::Window window("NO Inc.", ScreenSize);
   window.setVerticalSyncEnabled(true);
   window.setFramerateLimit(60);
+
+  gf::Cursor cursor;
+  cursor.loadFromSystem(gf::Cursor::Cross);
+  window.setMouseCursor(cursor);
 
   gf::RenderWindow renderer(window);
 
