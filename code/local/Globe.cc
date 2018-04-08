@@ -54,26 +54,26 @@ namespace no {
      * oil sources
      */
 
-    auto oilKuweit = addLocation("Kuwait", LocationType::OilSource, { 227.913f, -144.097f });
-    auto oilSaudi = addLocation("Saudi Arabia", LocationType::OilSource, { 256.565f, -105.903f });
-    auto oilIraq = addLocation("Iraq", LocationType::OilSource, { 194.92f, -197.917f });
-    auto oilAlgeria = addLocation("Algeria", LocationType::OilSource, { -56.0014f, -140.625f });
+    auto oilKuweit = addSourceLocation("Kuwait", LocationType::OilSource, { 227.913f, -144.097f }, 1.0f);
+    auto oilSaudi = addSourceLocation("Saudi Arabia", LocationType::OilSource, { 256.565f, -105.903f }, 1.0f);
+    auto oilIraq = addSourceLocation("Iraq", LocationType::OilSource, { 194.92f, -197.917f }, 1.0f);
+    auto oilAlgeria = addSourceLocation("Algeria", LocationType::OilSource, { -56.0014f, -140.625f }, 1.0f);
     auto oilNigeria = addSourceLocation("Nigeria", LocationType::OilSource, { -25.613f, 36.4583f }, 1.0f);
-    auto oilNothSea = addLocation("North Sea", LocationType::OilSource, { -73.3661f, -371.528f });
-    auto oilAlaska = addLocation("Alaska", LocationType::OilSource, { -788.18f, -410.799f });
-    auto oilCanada = addLocation("Canada", LocationType::OilSource, { -698.752f, -323.993f });
-    auto oilMexico = addLocation("Mexico", LocationType::OilSource, { -669.232f, -80.0694f });
-    auto oilTexas = addLocation("Texas", LocationType::OilSource, { -682.255f, -157.326f });
-    auto oilVenezuela = addLocation("Venezuela", LocationType::OilSource, { -505.134f, -8.02088f });
-    auto oilEcuador = addLocation("Ecuador", LocationType::OilSource, { -599.772f, 72.7083f });
-    auto oilArgentina = addLocation("Argentina", LocationType::OilSource, { -459.986f, 380.868f });
-    auto oilCaspianSea = addLocation("Caspian Sea", LocationType::OilSource, { 243.288f, -262.361f });
-    auto oilUral = addLocation("Ural", LocationType::OilSource, { 206.822f, -354.375f });
-    auto oilSiberia = addLocation("Siberia", LocationType::OilSource, { 331.848f, -389.097f });
-    auto oilIndia = addLocation("India", LocationType::OilSource, { 402.175f, -82.6735f });
-    auto oilChinaEast = addLocation("China, East", LocationType::OilSource, { 663.515f, -251.944f });
-    auto oilChinaWest = addLocation("China, West", LocationType::OilSource, { 447.324f, -232.847f });
-    auto oilIndonesia = addLocation("Indonesia", LocationType::OilSource, { 601.87f, 84.8611f });
+    auto oilNothSea = addSourceLocation("North Sea", LocationType::OilSource, { -73.3661f, -371.528f }, 1.0f);
+    auto oilAlaska = addSourceLocation("Alaska", LocationType::OilSource, { -788.18f, -410.799f }, 1.0f);
+    auto oilCanada = addSourceLocation("Canada", LocationType::OilSource, { -698.752f, -323.993f }, 1.0f);
+    auto oilMexico = addSourceLocation("Mexico", LocationType::OilSource, { -669.232f, -80.0694f }, 1.0f);
+    auto oilTexas = addSourceLocation("Texas", LocationType::OilSource, { -682.255f, -157.326f }, 1.0f);
+    auto oilVenezuela = addSourceLocation("Venezuela", LocationType::OilSource, { -505.134f, -8.02088f }, 1.0f);
+    auto oilEcuador = addSourceLocation("Ecuador", LocationType::OilSource, { -599.772f, 72.7083f }, 1.0f);
+    auto oilArgentina = addSourceLocation("Argentina", LocationType::OilSource, { -459.986f, 380.868f }, 1.0f);
+    auto oilCaspianSea = addSourceLocation("Caspian Sea", LocationType::OilSource, { 243.288f, -262.361f }, 1.0f);
+    auto oilUral = addSourceLocation("Ural", LocationType::OilSource, { 206.822f, -354.375f }, 1.0f);
+    auto oilSiberia = addSourceLocation("Siberia", LocationType::OilSource, { 331.848f, -389.097f }, 1.0f);
+    auto oilIndia = addSourceLocation("India", LocationType::OilSource, { 402.175f, -82.6735f }, 1.0f);
+    auto oilChinaEast = addSourceLocation("China, East", LocationType::OilSource, { 663.515f, -251.944f }, 1.0f);
+    auto oilChinaWest = addSourceLocation("China, West", LocationType::OilSource, { 447.324f, -232.847f }, 1.0f);
+    auto oilIndonesia = addSourceLocation("Indonesia", LocationType::OilSource, { 601.87f, 84.8611f }, 1.0f);
 
     /*
      * uranium sources
@@ -276,6 +276,54 @@ namespace no {
     for (auto &entry: m_exportPaths) {
       ExportPath &exportPath = entry.second;
       balance += -exportPath.charge * time.asSeconds();
+    }
+
+    // Compute consumation for each consumers
+    std::map<std::size_t, float> oilConsumption;
+    for (std::size_t i = 0; i < m_locations.size(); ++i) {
+      Location &source = m_locations[i];
+      // If it's a oil source
+      if (source.type == LocationType::OilSource && source.isBuild) {
+        // For each path form the source we get the export
+        // to add the quantity to consumer and keep this in memory
+        auto exportPaths = findExportFormSource(i);
+        for (auto &exportPath: exportPaths) {
+          // Get the id of consumers
+          std::size_t consumerID = exportPath.waypoints.back();
+
+          // If he is in memory
+          auto search = oilConsumption.find(consumerID);
+          if(search != oilConsumption.end()) {
+            // TODO: delete next and uncomment the second next
+            search->second += source.sourceData.resourceProduction;
+            // search->second += exportPath.quantity;
+          }
+          // Else we create the entry
+          else {
+            // TODO: delete next and uncomment the second next
+            oilConsumption.emplace(std::pair<std::size_t, float>(consumerID, source.sourceData.resourceProduction));
+            // oilConsumption.emplace(std::pair<std::size_t, float>(consumerID, exportPath.quantity));
+          }
+        }
+      }
+    }
+
+    // Compute oil profit
+    for (auto &entry: oilConsumption) {
+      std::size_t key = entry.first;
+      float realConsumption = entry.second;
+      Location consumer = m_locations[key];
+
+      // Discard the overflow
+      if (realConsumption > consumer.consumerData.oilConsumption) {
+        gf::Log::debug("%s waste %f\n", consumer.name.c_str(), realConsumption-consumer.consumerData.oilConsumption);
+        realConsumption = consumer.consumerData.oilConsumption;
+      }
+
+      // Compute the price
+      balance += realConsumption * consumer.consumerData.oilPrice * time.asSeconds();
+
+      gf::Log::debug("%s profit %f\n", consumer.name.c_str(), realConsumption * consumer.consumerData.oilPrice * time.asSeconds());
     }
 
     BalanceOperation operation;
@@ -611,30 +659,30 @@ namespace no {
     return { 0, 0, 0.0f };
   }
 
-  std::vector<Globe::Location> Globe::findConsumersFormSource(std::size_t id) {
-    std::vector<Location> consumers;
+  std::vector<Globe::ExportPath> Globe::findExportFormSource(std::size_t id) {
+    std::vector<ExportPath> paths;
 
     for (auto &entry: m_exportPaths) {
       ExportPath &exportPath = entry.second;
       if (exportPath.waypoints.front() == id) {
-        consumers.push_back(m_locations[exportPath.waypoints.back()]);
+        paths.push_back(exportPath);
       }
     }
 
-    return consumers;
+    return paths;
   }
 
-  std::vector<Globe::Location> Globe::findSourcesFormConsumer(std::size_t id) {
-    std::vector<Location> sources;
+  std::vector<Globe::ExportPath> Globe::findExportFormConsumer(std::size_t id) {
+    std::vector<ExportPath> paths;
 
     for (auto &entry: m_exportPaths) {
       ExportPath &exportPath = entry.second;
       if (exportPath.waypoints.back() == id) {
-        sources.push_back(m_locations[exportPath.waypoints.front()]);
+        paths.push_back(exportPath);
       }
     }
 
-    return sources;
+    return paths;
   }
 
 }

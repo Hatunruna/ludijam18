@@ -26,14 +26,13 @@ namespace no {
   static constexpr float BuildCostUraniumMining = 200.0f;
 
   // Consumption
-  static constexpr float BaseOilConsumption = 500.0f;
+  static constexpr float BaseOilConsumption = 100.0f;
 
   // Price
-  static constexpr float BasePriceOil = 20.0f;
+  static constexpr float BasePriceOil = 0.50f;
 
   // Production
-  static constexpr float BaseOilProduction = 500.0f;
-
+  static constexpr float BaseOilProduction = 50.0f;
 
   /// FOR DEBUG
   static constexpr float BuildingCharge = 1.0f; // 1/sec
