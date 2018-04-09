@@ -120,8 +120,8 @@ int main() {
   no::WorldMap map;
   mainEntities.addEntity(map);
 
-  no::Globe globe;
-  mainEntities.addEntity(globe);
+  // no::Globe globe;
+  // mainEntities.addEntity(globe);
 
   gf::EntityContainer hudEntities;
   // add entities to hudEntities

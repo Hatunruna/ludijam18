@@ -19,7 +19,7 @@ add_executable(no-inc
   code/main.cc
   code/local/BuildPanel.cc
   code/local/EconomicModel.cc
-  code/local/Globe.cc
+  # code/local/Globe.cc
   code/local/InfoPanel.cc
   code/local/Singletons.cc
   code/local/Troubles.cc
