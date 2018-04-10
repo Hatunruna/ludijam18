@@ -21,107 +21,23 @@
 #include <map>
 
 #include <gf/Entity.h>
-#include <gf/Event.h>
 #include <gf/Texture.h>
-#include <gf/View.h>
 
-#include "Messages.h"
+#include "EconomicModel.h"
 
 namespace no {
 
   class Globe : public gf::Entity {
   public:
-    Globe();
+    Globe(EconomicModel &model);
 
     virtual void update(gf::Time time) override;
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
-    gf::MessageStatus onBuildingQuery(gf::Id id, gf::Message *msg);
-    gf::MessageStatus onRouteStartQuery(gf::Id id, gf::Message *msg);
-    gf::MessageStatus onRoutePipeQuery(gf::Id id, gf::Message *msg);
-    gf::MessageStatus onInfoQuery(gf::Id id, gf::Message *msg);
-
   private:
-    enum class LocationType: int {
-      None,
-      Consumer,
-      OilSource = 10,
-      UraniumSource = 11,
-    };
-
-    struct Location {
-      std::string name;
-      LocationType type;
-      gf::Vector2f position;
-      bool isBuild;
-
-      union {
-        // Consumers
-        struct {
-          float oilConsumption;
-          float oilPrice;
-
-          float uraniumConsumption;
-          float uraniumPrice;
-        } consumerData;
-
-        // Sources
-        struct {
-          float resourceProduction;
-        } sourceData;
-      };
-    };
-
-    struct Route {
-      std::size_t endPoint0;
-      std::size_t endPoint1;
-      float charge;
-    };
-
-    struct ExportPath {
-      std::vector<std::size_t> waypoints;
-      float quantity;
-      float charge;
-      gf::Time delay;
-      float totalLenght;
-
-      void clear() {
-        waypoints.clear();
-        quantity = 0.0f;
-        charge = 0.0f;
-        delay = gf::Time::zero();
-        totalLenght = 0.0f;
-      }
-    };
-
-  private:
-    std::size_t addLocation(std::string name, LocationType type, gf::Vector2f pos);
-    std::size_t addConsumerLocation(std::string name, gf::Vector2f pos, float oilConsumptionFactor, float oilPriceFactor, float uraniumConsumptionFactor, float uraniumPriceFactor);
-    std::size_t addSourceLocation(std::string name, LocationType type, gf::Vector2f pos, float ResourceProductionFactor);
-    std::size_t addAnonymousLocation(gf::Vector2f pos);
-    void addRoute(std::size_t endPoint0, std::size_t endPoint1);
-    bool isValidRoute(std::size_t endPoint0, std::size_t endPoint1);
-    void drawPath(gf::RenderTarget& target, ExportPath &path);
-    Route findRoute(std::size_t endPoint0, std::size_t endPoint1);
-    std::vector<ExportPath> findExportFormSource(std::size_t id);
-    std::vector<ExportPath> findExportFormConsumer(std::size_t id);
-
-    std::map<std::size_t, float> computeConsumation(LocationType type);
-
-  private:
-    std::vector<Location> m_locations;
-    std::vector<Route> m_routes;
-
-    // Definitive route
-    std::size_t m_nextIDPath;
-    std::map<std::size_t, ExportPath> m_exportPaths;
-
-    // Temporary route
-    ExportPath m_tempRoute;
-
-    // Texture for resources
-    gf::Texture& m_oilPumpTexture;
-    gf::Texture& m_uraniumMiningTexture;
+    EconomicModel &m_model;
+    // gf::Texture& m_oilPumpTexture;
+    // gf::Texture& m_uraniumMiningTexture;
   };
 
 }

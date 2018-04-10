@@ -23,6 +23,7 @@
 #include <gf/Cursor.h>
 #include <gf/EntityContainer.h>
 #include <gf/Event.h>
+#include <gf/ModelContainer.h>
 #include <gf/RenderWindow.h>
 #include <gf/ViewContainer.h>
 #include <gf/Views.h>
@@ -113,6 +114,12 @@ int main() {
   downAction.setContinuous();
   actions.addAction(downAction);
 
+  // Models
+  gf::ModelContainer models;
+
+  no::EconomicModel gameModel;
+  models.addModel(gameModel);
+
   // entities
 
   gf::EntityContainer mainEntities;
@@ -120,8 +127,8 @@ int main() {
   no::WorldMap map;
   mainEntities.addEntity(map);
 
-  // no::Globe globe;
-  // mainEntities.addEntity(globe);
+  no::Globe globe(gameModel);
+  mainEntities.addEntity(globe);
 
   gf::EntityContainer hudEntities;
   // add entities to hudEntities
@@ -198,6 +205,7 @@ int main() {
     // 2. update
 
     gf::Time time = clock.restart();
+    gameModel.update(time);
     mainEntities.update(time);
     hudEntities.update(time);
 

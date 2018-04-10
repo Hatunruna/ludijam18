@@ -32,6 +32,7 @@ namespace no {
   using Tick = int;
 
   using LocationId = std::ptrdiff_t;
+  constexpr LocationId InvalidLocationId = -1;
 
   struct Location {
     LocationId id;
@@ -128,8 +129,9 @@ namespace no {
 
     // Static data handler
     LocationId createLocation(const gf::Vector2f position);
-    SourceId createSource(const gf::Vector2f position, const std::string &name, Resource resource, float production, float charge);
-    ConsumerId createConsumer(const gf::Vector2f position, const std::string &name, std::map<Resource, Demand> demands);
+    LocationId createSource(const gf::Vector2f position, const std::string &name, Resource resource, float production, float charge);
+    LocationId createConsumer(const gf::Vector2f position, const std::string &name, std::map<Resource, Demand> demands);
+    void createSegment(const LocationId id0, const LocationId id1, float charge, Tick delay, float length);
 
     virtual void update(gf::Time time) override;
 
