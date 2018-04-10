@@ -4,4 +4,4 @@
 [ ] Troubles
 [ ] Quantity handling
 [ ] Game balancing
-
+[ ] Merge Globe and WorldMap ?
