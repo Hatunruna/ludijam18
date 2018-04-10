@@ -31,14 +31,14 @@ namespace no {
 
   using Tick = int;
 
-  using LocationId = std::size_t;
+  using LocationId = std::ptrdiff_t;
 
   struct Location {
     LocationId id;
     gf::Vector2f position;
   };
 
-  using SourceId = std::size_t;
+  using SourceId = std::ptrdiff_t;
 
   enum class Resource {
     Oil,
@@ -54,7 +54,7 @@ namespace no {
     float charge;
   };
 
-  using ConsumerId = std::size_t;
+  using ConsumerId = std::ptrdiff_t;
 
   struct Demand {
     float consumption = 0.0f;
@@ -68,7 +68,7 @@ namespace no {
     std::map<Resource, Demand> demands;
   };
 
-  using SegmentId = std::size_t;
+  using SegmentId = std::ptrdiff_t;
 
   struct Segment {
     SegmentId id;
@@ -78,7 +78,7 @@ namespace no {
     float length;
   };
 
-  using RoadId = std::size_t;
+  using RoadId = std::ptrdiff_t;
 
   struct Package {
     Tick remaining;
@@ -125,6 +125,11 @@ namespace no {
 
   struct EconomicModel: public gf::Model {
     EconomicModel();
+
+    // Static data handler
+    LocationId createLocation(const gf::Vector2f position);
+    SourceId createSource(const gf::Vector2f position, const std::string &name, Resource resource, float production, float charge);
+    ConsumerId createConsumer(const gf::Vector2f position, const std::string &name, std::map<Resource, Demand> demands);
 
     virtual void update(gf::Time time) override;
 
