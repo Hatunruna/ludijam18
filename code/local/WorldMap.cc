@@ -19,6 +19,7 @@
 
 #include <gf/RenderTarget.h>
 #include <gf/Sprite.h>
+#include <gf/Unused.h>
 #include <gf/VectorOps.h>
 
 #include "Singletons.h"
@@ -35,14 +36,14 @@ namespace no {
   }
 
   void WorldMap::update(gf::Time time) {
-
+    gf::unused(time);
   }
 
   void WorldMap::render(gf::RenderTarget& target, const gf::RenderStates& states) {
     gf::Sprite sprite(m_texture);
     sprite.setColor(gf::Color::fromRgba32(0x82, 0x66, 0x44));
     sprite.setAnchor(gf::Anchor::Center);
-    target.draw(sprite);
+    target.draw(sprite, states);
   }
 
   /*
