@@ -18,13 +18,15 @@
 #include "EconomicModel.h"
 
 #include <gf/Circ.h>
+#include <gf/Log.h>
 #include <gf/Model.h>
 #include <gf/Unused.h>
 
 namespace no {
 
   EconomicModel::EconomicModel()
-  : state(State::Idle)
+  : previousLocation(InvalidId)
+  , state(State::Idle)
   , toolSelected(Tool::None)
   {
     /*
@@ -246,6 +248,9 @@ namespace no {
     createSegment(locBenin, urNiger, 1.0f, 1, 1.0f);
     createSegment(locBenin, locAtlanticEquator, 1.0f, 1, 1.0f);
 
+    // Reset the draft road
+    resetDraftRoad();
+
   }
 
   /*
@@ -307,6 +312,19 @@ namespace no {
    * Dynamic handlers
    */
   static constexpr float HitboxResource = 20.0f;
+  SourceId EconomicModel::searchSourceFormPosition() const {
+    for (const Source &source: sources) {
+      auto &position = locations[source.loc].position;
+      gf::CircF circ(position, HitboxResource);
+
+      if (circ.contains(worldPosition)) {
+        return source.id;
+      }
+    }
+
+    return InvalidId;
+  }
+
   SourceId EconomicModel::searchSourceFormPosition(Resource resource) const {
     for (const Source &source: sources) {
       auto &position = locations[source.loc].position;
@@ -314,6 +332,102 @@ namespace no {
 
       if (source.resource == resource && circ.contains(worldPosition)) {
         return source.id;
+      }
+    }
+
+    return InvalidId;
+  }
+
+  void EconomicModel::resetDraftRoad() {
+    draftRoad.id = InvalidId;
+    draftRoad.waypoints.clear();
+    draftRoad.length = 0.0f;
+    draftRoad.delay = 0;
+    draftRoad.quantity = 0.0f;
+    draftRoad.charge = 0.0f;
+    draftRoad.state = RoadState::Active;
+    draftRoad.packages = std::move(std::queue<Package>());
+
+    previousLocation = InvalidId;
+  }
+
+  RoadId EconomicModel::selectNextRoadPoint() {
+    // If it's the first point
+    if (draftRoad.waypoints.size() == 0 && previousLocation == InvalidId) {
+      auto sourceId = searchSourceFormPosition();
+
+      // it must be a built source
+      if (sourceId != InvalidId && built.count(sourceId) == 1) {
+        auto source = sources[sourceId];
+        previousLocation = source.loc;
+      }
+
+      return InvalidId;
+    }
+
+    // If it's the next waypoint we get the current location
+    LocationId locId = searchLocationFormPosition();
+
+    // And we check if it's a valid segment
+    SegmentId segId = isValidSegment(previousLocation, locId);
+    if (segId != InvalidId) {
+      previousLocation = locId;
+
+      Segment seg = segments[segId];
+      draftRoad.charge += seg.charge;
+      draftRoad.delay += seg.delay;
+      draftRoad.length += seg.length;
+      draftRoad.waypoints.push_back(seg.id);
+    }
+
+    // If the location is a consumers, we create the road
+    for (auto consumer: consumers) {
+      if (consumer.loc == locId) {
+        RoadId id = roads.size();
+        draftRoad.id = id;
+        roads.insert({ draftRoad.id, draftRoad });
+        resetDraftRoad();
+
+        return id;
+      }
+    }
+
+    return InvalidId;
+  }
+
+  std::vector<gf::Vector2f> EconomicModel::searchNeighborLocation(const LocationId locationId) {
+    std::vector<gf::Vector2f> neighbors;
+    for (Segment seg: segments) {
+      if (seg.endPoints[0] == locationId) {
+        neighbors.push_back(locations[seg.endPoints[1]].position);
+      }
+      else if (seg.endPoints[1] == locationId) {
+        neighbors.push_back(locations[seg.endPoints[0]].position);
+      }
+    }
+
+    return neighbors;
+  }
+
+  static constexpr float HitboxLocation = 15.0f;
+  LocationId EconomicModel::searchLocationFormPosition() const {
+    for (const Location &location: locations) {
+      auto &position = location.position;
+      gf::CircF circ(position, HitboxLocation);
+
+      if (circ.contains(worldPosition)) {
+        return location.id;
+      }
+    }
+
+    return InvalidId;
+  }
+
+
+  SegmentId EconomicModel::isValidSegment(LocationId locId0, LocationId locId1) const {
+    for (auto seg: segments) {
+      if ((seg.endPoints[0] == locId0 && seg.endPoints[1] == locId1) || (seg.endPoints[0] == locId1 && seg.endPoints[1] == locId0)) {
+        return seg.id;
       }
     }
 

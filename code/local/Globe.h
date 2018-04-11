@@ -35,6 +35,9 @@ namespace no {
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
   private:
+    void drawRoad(gf::RenderTarget& target, const gf::RenderStates& states, const Road &road) const;
+
+  private:
     EconomicModel &m_model;
     gf::Texture& m_oilPumpTexture;
     gf::Texture& m_uraniumMiningTexture;

@@ -144,7 +144,13 @@ namespace no {
     void createSegment(const LocationId id0, const LocationId id1, float charge, Tick delay, float length);
 
     // Dynamic handlers
+    SourceId searchSourceFormPosition() const;
     SourceId searchSourceFormPosition(Resource resource) const;
+    void resetDraftRoad();
+    RoadId selectNextRoadPoint();
+    std::vector<gf::Vector2f> searchNeighborLocation(const LocationId locationId);
+    LocationId searchLocationFormPosition() const;
+    SegmentId isValidSegment(LocationId locId0, LocationId locId1) const;
 
     virtual void update(gf::Time time) override;
 
@@ -160,6 +166,9 @@ namespace no {
 
     std::vector<Trouble<LocationId>> sourceTrouble;
     std::vector<Trouble<SegmentId>> segmentTrouble;
+
+    Road draftRoad;
+    LocationId previousLocation;
 
     // state
     State state;

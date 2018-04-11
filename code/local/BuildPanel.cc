@@ -52,6 +52,7 @@ namespace no {
     m_oilPumpWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::OilBuilder;
+      m_model.resetDraftRoad();
     });
     m_widgets.addWidget(m_oilPumpWidget);
 
@@ -60,7 +61,7 @@ namespace no {
     m_uraniumMiningWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::UraniumBuilder;
-
+      m_model.resetDraftRoad();
     });
     m_widgets.addWidget(m_uraniumMiningWidget);
 
@@ -69,7 +70,7 @@ namespace no {
     m_routeWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::RoadBuilder;
-
+      m_model.resetDraftRoad();
     });
     m_widgets.addWidget(m_routeWidget);
 
@@ -78,7 +79,7 @@ namespace no {
     m_infoWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::Info;
-
+      m_model.resetDraftRoad();
     });
     m_widgets.addWidget(m_infoWidget);
   }
@@ -134,6 +135,18 @@ namespace no {
 
           break;
         }
+
+        case Tool::RoadBuilder:
+        {
+          auto roadId = m_model.selectNextRoadPoint();
+
+          // End of road
+          if (roadId != InvalidId) {
+            m_model.state = State::Idle;
+          }
+          break;
+        }
+
         default:
           // Never happend
           assert(false);

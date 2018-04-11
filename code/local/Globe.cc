@@ -55,17 +55,17 @@ namespace no {
       line.setOutlineColor(gf::Color::Gray(0.3f) * gf::Color::Opaque(0.7f));
       target.draw(line, states);
     }
-    //
-    // // Draw active route
-    // for (auto &entry: m_exportPaths) {
-    //   drawPath(target, entry.second);
-    // }
-    //
-    // // Draw the temporary path
-    // if (m_tempRoute.waypoints.size() > 0) {
-    //   drawPath(target, m_tempRoute);
-    // }
-    //
+
+    // Draw active route
+    for (const auto &road: m_model.roads) {
+      drawRoad(target, states, road.second);
+    }
+
+    // Draw the temporary path
+    if (m_model.previousLocation != InvalidId) {
+      drawRoad(target, states, m_model.draftRoad);
+    }
+
     // Draw locations
     for (const auto &location: m_model.locations) {
       gf::CircleShape shape;
@@ -75,6 +75,21 @@ namespace no {
       shape.setOutlineThickness(0.0f);
       shape.setAnchor(gf::Anchor::Center);
       target.draw(shape, states);
+    }
+
+    // Draw neighbor way points
+    if (m_model.previousLocation != InvalidId) {
+      auto neighbors = m_model.searchNeighborLocation(m_model.previousLocation);
+
+      for (auto neighbor: neighbors) {
+        gf::CircleShape shape;
+        shape.setPosition(neighbor);
+        shape.setRadius(5.0f);
+        shape.setColor(gf::Color::White);
+        shape.setOutlineThickness(0.0f);
+        shape.setAnchor(gf::Anchor::Center);
+        target.draw(shape, states);
+      }
     }
 
     // Draw consumers
@@ -127,69 +142,21 @@ namespace no {
         target.draw(sprite, states);
       }
     }
+  }
 
-    // for (auto& loc : m_locations) {
-    //   if (loc.isBuild) {
-    //     gf::Sprite sprite;
-    //
-    //     switch (loc.type) {
-    //       case LocationType::OilSource:
-    //         sprite.setTexture(m_oilPumpTexture);
-    //         break;
-    //
-    //       case LocationType::UraniumSource:
-    //         sprite.setTexture(m_uraniumMiningTexture);
-    //         break;
-    //
-    //       default:
-    //         assert(false);
-    //     }
-    //
-    //     sprite.setScale(50.0f / 256.0f); // WorldSize / SpriteSize
-    //     sprite.setPosition(loc.position);
-    //     sprite.setAnchor(gf::Anchor::Center);
-    //     target.draw(sprite);
-    //   }
-    //   else {
-    //     gf::CircleShape shape;
-    //
-    //     switch (loc.type) {
-    //       case LocationType::Consumer:
-    //         shape.setRadius(40.0f);
-    //         shape.setColor(gf::Color::Transparent);
-    //         shape.setOutlineColor(gf::Color::Azure * gf::Color::Opaque(0.7f));
-    //         shape.setOutlineThickness(10.0f);
-    //         break;
-    //
-    //       case LocationType::OilSource:
-    //         shape.setRadius(ResourcesRadius);
-    //         shape.setColor(gf::Color::Transparent);
-    //         shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
-    //         shape.setOutlineThickness(5.0f);
-    //         break;
-    //
-    //       case LocationType::UraniumSource:
-    //         shape.setRadius(ResourcesRadius);
-    //         shape.setColor(gf::Color::Transparent);
-    //         shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
-    //         shape.setOutlineThickness(5.0f);
-    //         break;
-    //
-    //       case LocationType::None:
-    //         break;
-    //     }
-    //
-    //     shape.setPosition(loc.position);
-    //     shape.setAnchor(gf::Anchor::Center);
-    //     target.draw(shape);
-    //
-    //     shape.setRadius(3.0f);
-    //     shape.setColor(gf::Color::Gray());
-    //     shape.setOutlineThickness(0.0f);
-    //     shape.setAnchor(gf::Anchor::Center);
-    //     target.draw(shape);
-    //   }
-    // }
+  void Globe::drawRoad(gf::RenderTarget& target, const gf::RenderStates& states, const Road &road) const {
+    for (auto &segId: road.waypoints) {
+      Segment seg = m_model.segments[segId];
+
+      auto end0Pos = m_model.locations[seg.endPoints[0]].position;
+      auto end1Pos = m_model.locations[seg.endPoints[1]].position;
+      gf::Line line(end0Pos, end1Pos);
+      line.setColor(gf::Color::White);
+      line.setWidth(3.0f);
+      line.setOutlineThickness(0.5f);
+      line.setOutlineColor(gf::Color::Black);
+      target.draw(line, states);
+    }
   }
 
 }
