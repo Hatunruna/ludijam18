@@ -250,7 +250,7 @@ namespace no {
     createSegment(locBenin, locAtlanticEquator, 1.0f, 1, 1.0f);
 
     // Reset the draft road
-    resetDraftRoad();
+    resetState();
 
   }
 
@@ -339,7 +339,7 @@ namespace no {
     return InvalidId;
   }
 
-  void EconomicModel::resetDraftRoad() {
+  void EconomicModel::resetState() {
     draftRoad.id = InvalidId;
     draftRoad.waypoints.clear();
     draftRoad.length = 0.0f;
@@ -350,6 +350,7 @@ namespace no {
     draftRoad.packages = std::move(std::queue<Package>());
 
     previousLocation = InvalidId;
+    displayLocation = InvalidId;
   }
 
   RoadId EconomicModel::selectNextRoadPoint() {
@@ -387,7 +388,7 @@ namespace no {
         RoadId id = roads.size();
         draftRoad.id = id;
         roads.insert({ draftRoad.id, draftRoad });
-        resetDraftRoad();
+        resetState();
 
         return id;
       }

@@ -52,7 +52,7 @@ namespace no {
     m_oilPumpWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::OilBuilder;
-      m_model.resetDraftRoad();
+      m_model.resetState();
     });
     m_widgets.addWidget(m_oilPumpWidget);
 
@@ -61,7 +61,7 @@ namespace no {
     m_uraniumMiningWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::UraniumBuilder;
-      m_model.resetDraftRoad();
+      m_model.resetState();
     });
     m_widgets.addWidget(m_uraniumMiningWidget);
 
@@ -70,7 +70,7 @@ namespace no {
     m_routeWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::RoadBuilder;
-      m_model.resetDraftRoad();
+      m_model.resetState();
     });
     m_widgets.addWidget(m_routeWidget);
 
@@ -79,7 +79,7 @@ namespace no {
     m_infoWidget.setCallback([this]() {
       m_model.state = State::ToolSelected;
       m_model.toolSelected = Tool::Info;
-      m_model.resetDraftRoad();
+      m_model.resetState();
     });
     m_widgets.addWidget(m_infoWidget);
   }
@@ -162,93 +162,6 @@ namespace no {
         break;
       }
     }
-    // if (button == gf::MouseButton::Left) {
-    //   switch (m_state) {
-    //   case State::Idle:
-    //     m_widgets.triggerAction();
-    //     break;
-    //
-    //   case State::BuildSelected:
-    //     {
-    //       BuildingQuery query;
-    //       query.building = m_selectedBuilding;
-    //       query.position = worldPosition;
-    //       query.isValid = false;
-    //       gMessageManager().sendMessage(&query);
-    //
-    //       if (query.isValid) {
-    //         BalanceOperation operation;
-    //         if (m_selectedBuilding == BuildingType::PetrolPump) {
-    //           operation.value = -BuildCostOilPump;
-    //         }
-    //         else if (m_selectedBuilding == BuildingType::UraniumMining) {
-    //           operation.value = -BuildCostUraniumMining;
-    //         }
-    //         else {
-    //           assert(false);
-    //         }
-    //         gMessageManager().sendMessage(&operation);
-    //
-    //         m_state = State::Idle;
-    //       }
-    //       else { // To allow change building without select and build in one clic
-    //         m_widgets.triggerAction();
-    //       }
-    //     }
-    //     break;
-    //
-    //   case State::RouteMakerSource:
-    //     {
-    //       RouteStartQuery query;
-    //       query.position = worldPosition;
-    //       query.isValid = false;
-    //       gMessageManager().sendMessage(&query);
-    //
-    //       if (query.isValid) {
-    //         m_state = State::RouteMakerPipe;
-    //       }
-    //       else { // To allow change building without select and build in one clic
-    //         m_widgets.triggerAction();
-    //       }
-    //     }
-    //     break;
-    //
-    //   case State::RouteMakerPipe:
-    //   {
-    //     RoutePipeQuery query;
-    //     query.position = worldPosition;
-    //     query.isValid = false;
-    //     query.isEnded = false;
-    //     gMessageManager().sendMessage(&query);
-    //
-    //     if (query.isValid) {
-    //       if (query.isEnded) {
-    //         m_state = State::Idle;
-    //       }
-    //     }
-    //     else { // To allow change building without select and build in one clic
-    //       m_widgets.triggerAction();
-    //     }
-    //   }
-    //   break;
-    //
-    //   case State::InfoTarget:
-    //   {
-    //     InfoQuery query;
-    //     query.position = worldPosition;
-    //     query.isValid = false;
-    //     gMessageManager().sendMessage(&query);
-    //
-    //     if (!query.isValid) {
-    //       m_widgets.triggerAction();
-    //     }
-    //   }
-    //   break;
-    //
-    //   default:
-    //     assert(false);
-    //   }
-    // }
   }
 
   void BuildMenu::update(gf::Time time) {

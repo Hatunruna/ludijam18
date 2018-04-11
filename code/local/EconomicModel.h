@@ -146,7 +146,7 @@ namespace no {
     // Dynamic handlers
     SourceId searchSourceFormPosition() const;
     SourceId searchSourceFormPosition(Resource resource) const;
-    void resetDraftRoad();
+    void resetState();
     RoadId selectNextRoadPoint();
     std::vector<gf::Vector2f> searchNeighborLocation(const LocationId locationId);
     LocationId searchLocationFormPosition() const;
