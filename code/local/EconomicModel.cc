@@ -17,6 +17,7 @@
  */
 #include "EconomicModel.h"
 
+#include <gf/Circ.h>
 #include <gf/Model.h>
 #include <gf/Unused.h>
 
@@ -24,6 +25,7 @@ namespace no {
 
   EconomicModel::EconomicModel()
   : state(State::Idle)
+  , toolSelected(Tool::None)
   {
     /*
      * consumers
@@ -299,6 +301,23 @@ namespace no {
 
   void EconomicModel::update(gf::Time time) {
     gf::unused(time);
+  }
+
+  /*
+   * Dynamic handlers
+   */
+  static constexpr float HitboxResource = 20.0f;
+  SourceId EconomicModel::searchSourceFormPosition(Resource resource) const {
+    for (const Source &source: sources) {
+      auto &position = locations[source.loc].position;
+      gf::CircF circ(position, HitboxResource);
+
+      if (source.resource == resource && circ.contains(worldPosition)) {
+        return source.id;
+      }
+    }
+
+    return InvalidId;
   }
 
 }

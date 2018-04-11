@@ -25,33 +25,22 @@
 #include <gf/WidgetContainer.h>
 #include <gf/Widgets.h>
 
+#include "EconomicModel.h"
 #include "Messages.h"
 
 namespace no {
 
   class BuildMenu : public gf::Entity {
   public:
-    BuildMenu();
+    BuildMenu(EconomicModel &model);
 
-    void pointTo(gf::Vector2f position);
-    void pressed(gf::MouseButton button, gf::Vector2f worldPosition);
+    void pressed(gf::MouseButton button);
 
-    gf::WidgetContainer& getWidgetContainer();
     virtual void update(gf::Time time) override;
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
   private:
-    enum class State {
-      Idle,
-      BuildSelected,
-      RouteMakerSource,
-      RouteMakerPipe,
-      InfoTarget,
-    };
-
-  private:
-    // State system
-    State m_state;
+    EconomicModel &m_model;
 
     // Texture and widgets
     // Oil pump
@@ -77,8 +66,6 @@ namespace no {
     gf::WidgetContainer m_widgets;
 
     // Cursor
-    gf::Vector2f m_mousePosition;
-    BuildingType m_selectedBuilding;
   };
 
 }

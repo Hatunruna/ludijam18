@@ -25,6 +25,7 @@
 #include <vector>
 
 #include <gf/Model.h>
+#include <gf/Rect.h>
 #include <gf/Vector.h>
 
 namespace no {
@@ -32,7 +33,7 @@ namespace no {
   using Tick = int;
 
   using LocationId = std::ptrdiff_t;
-  constexpr LocationId InvalidLocationId = -1;
+  constexpr std::ptrdiff_t InvalidId = -1;
 
   struct Location {
     LocationId id;
@@ -122,6 +123,15 @@ namespace no {
 
   enum class State {
     Idle,
+    ToolSelected,
+  };
+
+  enum class Tool {
+    None,
+    Info,
+    OilBuilder,
+    UraniumBuilder,
+    RoadBuilder,
   };
 
   struct EconomicModel: public gf::Model {
@@ -132,6 +142,9 @@ namespace no {
     LocationId createSource(const gf::Vector2f position, const std::string &name, Resource resource, float production, float charge);
     LocationId createConsumer(const gf::Vector2f position, const std::string &name, std::map<Resource, Demand> demands);
     void createSegment(const LocationId id0, const LocationId id1, float charge, Tick delay, float length);
+
+    // Dynamic handlers
+    SourceId searchSourceFormPosition(Resource resource) const;
 
     virtual void update(gf::Time time) override;
 
@@ -150,6 +163,10 @@ namespace no {
 
     // state
     State state;
+    Tool toolSelected;
+    gf::Vector2f worldPosition;
+    gf::Vector2f screenPosition;
+    gf::RectF fieldOfView;
   };
 
 }

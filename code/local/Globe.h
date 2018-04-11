@@ -36,8 +36,8 @@ namespace no {
 
   private:
     EconomicModel &m_model;
-    // gf::Texture& m_oilPumpTexture;
-    // gf::Texture& m_uraniumMiningTexture;
+    gf::Texture& m_oilPumpTexture;
+    gf::Texture& m_uraniumMiningTexture;
   };
 
 }

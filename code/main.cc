@@ -133,7 +133,7 @@ int main() {
   gf::EntityContainer hudEntities;
   // add entities to hudEntities
 
-  no::BuildMenu buildMenu;
+  no::BuildMenu buildMenu(gameModel);
   hudEntities.addEntity(buildMenu);
 
   no::InfoPanel infoPanel;
@@ -158,7 +158,15 @@ int main() {
 
       switch (event.type) {
         case gf::EventType::MouseMoved:
-          buildMenu.pointTo(renderer.mapPixelToCoords(event.mouseCursor.coords, hudView));
+        {
+          auto worldPosition = renderer.mapPixelToCoords(event.mouseCursor.coords, mainView);
+          auto screenPosition = renderer.mapPixelToCoords(event.mouseCursor.coords, hudView);
+
+          // Update postions for the model
+          gameModel.worldPosition = worldPosition;
+          gameModel.screenPosition = screenPosition;
+          gameModel.fieldOfView = mainView.getBounds();
+        }
           break;
 
         case gf::EventType::MouseButtonPressed:
@@ -166,13 +174,18 @@ int main() {
           auto screenPosition = renderer.mapPixelToCoords(event.mouseButton.coords, hudView);
           auto worldPosition = renderer.mapPixelToCoords(event.mouseButton.coords, mainView);
 
+          // Update postions for the model
+          gameModel.worldPosition = worldPosition;
+          gameModel.screenPosition = screenPosition;
+          gameModel.fieldOfView = mainView.getBounds();
+
           if (event.mouseButton.button == gf::MouseButton::Middle) {
             gf::Vector2f pos = worldPosition;
             std::cout << "{ " << pos.x << "f, " << pos.y << "f },\n";
           }
 
-          buildMenu.pointTo(screenPosition);
-          buildMenu.pressed(event.mouseButton.button, worldPosition);
+          // Trigger build menu
+          buildMenu.pressed(event.mouseButton.button);
           break;
         }
 

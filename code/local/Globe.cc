@@ -32,8 +32,11 @@ namespace no {
 
   Globe::Globe(EconomicModel &model)
   : m_model(model)
+  , m_oilPumpTexture(gResourceManager().getTexture("oil-pump.png"))
+  , m_uraniumMiningTexture(gResourceManager().getTexture("uranium-mining.png"))
   {
-
+    m_oilPumpTexture.setSmooth();
+    m_uraniumMiningTexture.setSmooth();
   }
 
   void Globe::update(gf::Time time) {
@@ -50,7 +53,7 @@ namespace no {
       line.setWidth(3.0f);
       line.setOutlineThickness(0.5f);
       line.setOutlineColor(gf::Color::Gray(0.3f) * gf::Color::Opaque(0.7f));
-      target.draw(line);
+      target.draw(line, states);
     }
     //
     // // Draw active route
@@ -88,21 +91,41 @@ namespace no {
 
     // Draw source
     for (const auto &source: m_model.sources) {
-      gf::CircleShape shape;
-      shape.setRadius(15.0f);
-      shape.setColor(gf::Color::Transparent);
-      switch (source.resource) {
-      case Resource::Oil:
-        shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
-        break;
-      case Resource::Uranium:
-        shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
-        break;
+      if (m_model.built.count(source.id) == 0) {
+        gf::CircleShape shape;
+        shape.setRadius(15.0f);
+        shape.setColor(gf::Color::Transparent);
+        switch (source.resource) {
+        case Resource::Oil:
+          shape.setOutlineColor(gf::Color::Black * gf::Color::Opaque(0.3f));
+          break;
+        case Resource::Uranium:
+          shape.setOutlineColor(gf::Color::Chartreuse * gf::Color::Opaque(0.3f));
+          break;
+        }
+        shape.setOutlineThickness(5.0f);
+        shape.setPosition(m_model.locations[source.loc].position);
+        shape.setAnchor(gf::Anchor::Center);
+        target.draw(shape, states);
       }
-      shape.setOutlineThickness(5.0f);
-      shape.setPosition(m_model.locations[source.loc].position);
-      shape.setAnchor(gf::Anchor::Center);
-      target.draw(shape);
+      else {
+        gf::Sprite sprite;
+        switch (source.resource) {
+        case Resource::Oil:
+          sprite.setTexture(m_oilPumpTexture);
+          break;
+        case Resource::Uranium:
+          sprite.setTexture(m_uraniumMiningTexture);
+          break;
+        default:
+          assert(false);
+        }
+
+        sprite.setScale(50.0f / 256.0f); // WorldSize / SpriteSize
+        sprite.setPosition(m_model.locations[source.loc].position);
+        sprite.setAnchor(gf::Anchor::Center);
+        target.draw(sprite, states);
+      }
     }
 
     // for (auto& loc : m_locations) {
