@@ -25,43 +25,6 @@
 using namespace gf::literals;
 
 namespace no {
-  // TODO: Rename this...
-  enum class BuildingType: int {
-    Route,
-    InfoTarget,
-    PetrolPump = 10,
-    UraniumMining = 11,
-  };
-
-  struct BuildingQuery : public gf::Message {
-    static constexpr gf::Id type = "BuildingQuery"_id;
-
-    BuildingType building;
-    gf::Vector2f position;
-    bool isValid;
-  };
-
-  struct RouteStartQuery : public gf::Message {
-    static constexpr gf::Id type = "RouteStartQuery"_id;
-
-    gf::Vector2f position;
-    bool isValid;
-  };
-
-  struct RoutePipeQuery : public gf::Message {
-    static constexpr gf::Id type = "RoutePipeQuery"_id;
-
-    gf::Vector2f position;
-    bool isValid;
-    bool isEnded;
-  };
-
-  struct InfoQuery : public gf::Message {
-    static constexpr gf::Id type = "InfoQuery"_id;
-
-    gf::Vector2f position;
-    bool isValid;
-  };
 
   struct NewSourceTrouble : public gf::Message {
     static constexpr gf::Id type = "NewSourceTrouble"_id;
@@ -79,25 +42,6 @@ namespace no {
     static constexpr gf::Id type = "BalanceOperation"_id;
 
     float value;
-  };
-
-  struct DisplayNone : public gf::Message {
-    static constexpr gf::Id type = "DisplayNone"_id;
-  };
-
-  struct DisplaySource : public gf::Message {
-    static constexpr gf::Id type = "DisplaySource"_id;
-
-    std::string name;
-    float resourceProduction;
-  };
-
-  struct DisplayConsumer : public gf::Message {
-    static constexpr gf::Id type = "DisplayConsumer"_id;
-
-    std::string name;
-    float oilConsumption;
-    float oilPrice;
   };
 
 }

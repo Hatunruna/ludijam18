@@ -136,7 +136,7 @@ int main() {
   no::BuildMenu buildMenu(gameModel);
   hudEntities.addEntity(buildMenu);
 
-  no::InfoPanel infoPanel;
+  no::InfoPanel infoPanel(gameModel);
   hudEntities.addEntity(infoPanel);
 
   // game loop

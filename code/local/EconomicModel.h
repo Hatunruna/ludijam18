@@ -151,6 +151,8 @@ namespace no {
     std::vector<gf::Vector2f> searchNeighborLocation(const LocationId locationId);
     LocationId searchLocationFormPosition() const;
     SegmentId isValidSegment(LocationId locId0, LocationId locId1) const;
+    SourceId isSource(LocationId locId) const;
+    ConsumerId isConsumer(LocationId locId) const;
 
     virtual void update(gf::Time time) override;
 
@@ -167,8 +169,12 @@ namespace no {
     std::vector<Trouble<LocationId>> sourceTrouble;
     std::vector<Trouble<SegmentId>> segmentTrouble;
 
+    // Draft road
     Road draftRoad;
     LocationId previousLocation;
+
+    // Display location
+    LocationId displayLocation;
 
     // state
     State state;

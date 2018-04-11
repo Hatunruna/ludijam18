@@ -21,7 +21,7 @@
 #include <gf/RenderTarget.h>
 #include <gf/StringUtils.h>
 #include <gf/Text.h>
-#include <gf/StringUtils.h>
+#include <gf/Unused.h>
 
 #include <gf/Log.h>
 
@@ -30,18 +30,14 @@
 
 namespace no {
 
-  InfoPanel::InfoPanel()
+  InfoPanel::InfoPanel(EconomicModel &model)
   : m_balance(5000.0f)
   , m_font(gResourceManager().getFont("liberation-sans.ttf"))
   , m_currentCharacterSize(14)
   , m_ui(m_font, m_currentCharacterSize)
-  , m_display(Display::None)
+  , m_model(model)
   {
-    // Messages handlers
-    gMessageManager().registerHandler<BalanceOperation>(&InfoPanel::onBalanceOperation, this);
-    gMessageManager().registerHandler<DisplayNone>(&InfoPanel::onDisplayNone, this);
-    gMessageManager().registerHandler<DisplaySource>(&InfoPanel::onDisplaySource, this);
-    gMessageManager().registerHandler<DisplayConsumer>(&InfoPanel::onDisplayConsumer, this);
+
   }
 
   void InfoPanel::processEvent(const gf::Event& event) {
@@ -49,7 +45,7 @@ namespace no {
   }
 
   void InfoPanel::update(gf::Time time) {
-
+    gf::unused(time);
   }
 
   void InfoPanel::render(gf::RenderTarget& target, const gf::RenderStates& states) {
@@ -74,36 +70,53 @@ namespace no {
     gf::Vector2f infoSize = coordinates.getRelativeSize({ 0.2f, 0.5f });
 
     if (m_ui.begin("NO Inc. Info", gf::RectF(infoPosition, infoSize), gf::UIWindow::Title | gf::UIWindow::Border)) {
-      switch (m_display) {
-        case Display::Source:
+      if (m_model.displayLocation != InvalidId) {
+        // If it's a source
+        SourceId sourceId = m_model.isSource(m_model.displayLocation);
+        ConsumerId consumerId = m_model.isConsumer(m_model.displayLocation);
+        if (sourceId != InvalidId) {
+          Source source = m_model.sources[sourceId];
+
           m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.5f, 0.5f });
           m_ui.label("Name:");
-          m_ui.label(m_source.name);
+          m_ui.label(source.name);
           m_ui.label("Production:");
-          m_ui.label(gf::niceNum(m_source.resourceProduction, 0.1f));
-          break;
+          m_ui.label(gf::niceNum(source.production, 0.1f));
+          m_ui.label("Charge:");
+          m_ui.label(gf::niceNum(source.charge, 0.1f));
+        }
+        else if (consumerId != InvalidId) {
+          Consumer consumer = m_model.consumers[consumerId];
 
-        case Display::Consumer:
           m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.3f, 0.7f });
           m_ui.label("Name:");
-          m_ui.label(m_consumer.name);
+          m_ui.label(consumer.name);
 
           m_ui.separator(height / 2);
 
-          m_ui.layoutRowDynamic(height, 1);
-          m_ui.label("Oil", gf::UIAlignment::Center);
+          auto oilDemand = getDemand(consumer, Resource::Oil);
+          if (oilDemand.second) {
+            m_ui.layoutRowDynamic(height, 1);
+            m_ui.label("Oil", gf::UIAlignment::Center);
+            m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.6f, 0.4f });
+            m_ui.label("Consumption:");
+            m_ui.label(gf::niceNum(oilDemand.first.consumption, 0.1f));
+            m_ui.label("Price:");
+            m_ui.label(gf::niceNum(oilDemand.first.price, 0.2f));
+          }
 
-          m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.6f, 0.4f });
-          m_ui.label("Consumption:");
-          m_ui.label(gf::niceNum(m_consumer.oilConsumption, 0.1f));
-          m_ui.label("Price:");
-          m_ui.label(gf::niceNum(m_consumer.oilPrice, 0.2f));
-          break;
-
-        case Display::None:
-          break;
+          auto uraniumDemand = getDemand(consumer, Resource::Oil);
+          if (oilDemand.second) {
+            m_ui.layoutRowDynamic(height, 1);
+            m_ui.label("Uranium", gf::UIAlignment::Center);
+            m_ui.layoutRow(gf::UILayout::Dynamic, height, { 0.6f, 0.4f });
+            m_ui.label("Consumption:");
+            m_ui.label(gf::niceNum(uraniumDemand.first.consumption, 0.1f));
+            m_ui.label("Price:");
+            m_ui.label(gf::niceNum(uraniumDemand.first.price, 0.2f));
+          }
+        }
       }
-
     }
 
     m_ui.end();
@@ -122,32 +135,13 @@ namespace no {
 
   }
 
-  gf::MessageStatus InfoPanel::onBalanceOperation(gf::Id id, gf::Message *msg) {
-    assert(id == BalanceOperation::type);
-    BalanceOperation *operation = static_cast<BalanceOperation*>(msg);
+  std::pair<Demand, bool> InfoPanel::getDemand(Consumer consumer, Resource resource) {
+    auto search = consumer.demands.find(resource);
+    if (search != consumer.demands.end()) {
+      return { search->second, true };
+    }
 
-    m_balance += operation->value;
-
-    return gf::MessageStatus::Keep;
+    return { { 0.0f, 0.0f }, false };
   }
 
-  gf::MessageStatus InfoPanel::onDisplayNone(gf::Id id, gf::Message *msg) {
-    assert(id == DisplayNone::type);
-    m_display = Display::None;
-    return gf::MessageStatus::Keep;
-  }
-
-  gf::MessageStatus InfoPanel::onDisplaySource(gf::Id id, gf::Message *msg) {
-    assert(id == DisplaySource::type);
-    m_display = Display::Source;
-    m_source = *static_cast<DisplaySource *>(msg);
-    return gf::MessageStatus::Keep;
-  }
-
-  gf::MessageStatus InfoPanel::onDisplayConsumer(gf::Id id, gf::Message *msg) {
-    assert(id == DisplayConsumer::type);
-    m_display = Display::Consumer;
-    m_consumer = *static_cast<DisplayConsumer *>(msg);
-    return gf::MessageStatus::Keep;
-  }
 }

@@ -22,13 +22,13 @@
 #include <gf/Font.h>
 #include <gf/UI.h>
 
-#include "Messages.h"
+#include "EconomicModel.h"
 
 namespace no {
 
   class InfoPanel: public gf::Entity {
   public:
-    InfoPanel();
+    InfoPanel(EconomicModel &model);
 
     void processEvent(const gf::Event& event);
 
@@ -36,10 +36,7 @@ namespace no {
     virtual void render(gf::RenderTarget& target, const gf::RenderStates& states) override;
 
   private:
-    gf::MessageStatus onBalanceOperation(gf::Id id, gf::Message *msg);
-    gf::MessageStatus onDisplayNone(gf::Id id, gf::Message *msg);
-    gf::MessageStatus onDisplaySource(gf::Id id, gf::Message *msg);
-    gf::MessageStatus onDisplayConsumer(gf::Id id, gf::Message *msg);
+    std::pair<Demand, bool> getDemand(Consumer consumer, Resource resource);
 
   private:
     float m_balance;
@@ -48,15 +45,7 @@ namespace no {
     unsigned m_currentCharacterSize;
     gf::UI m_ui;
 
-    enum class Display {
-      None,
-      Source,
-      Consumer,
-    };
-
-    Display m_display;
-    DisplaySource m_source;
-    DisplayConsumer m_consumer;
+    EconomicModel &m_model;
 
   };
 

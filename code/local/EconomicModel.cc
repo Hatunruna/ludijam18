@@ -26,6 +26,7 @@ namespace no {
 
   EconomicModel::EconomicModel()
   : previousLocation(InvalidId)
+  , displayLocation(InvalidId)
   , state(State::Idle)
   , toolSelected(Tool::None)
   {
@@ -428,6 +429,26 @@ namespace no {
     for (auto seg: segments) {
       if ((seg.endPoints[0] == locId0 && seg.endPoints[1] == locId1) || (seg.endPoints[0] == locId1 && seg.endPoints[1] == locId0)) {
         return seg.id;
+      }
+    }
+
+    return InvalidId;
+  }
+
+  SourceId EconomicModel::isSource(LocationId locId) const {
+    for (auto &source: sources) {
+      if (source.loc == locId) {
+        return source.id;
+      }
+    }
+
+    return InvalidId;
+  }
+
+  ConsumerId EconomicModel::isConsumer(LocationId locId) const {
+    for (auto &consumer: consumers) {
+      if (consumer.loc == locId) {
+        return consumer.id;
       }
     }
 

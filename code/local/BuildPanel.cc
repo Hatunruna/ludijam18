@@ -147,6 +147,13 @@ namespace no {
           break;
         }
 
+        case Tool::Info:
+        {
+          auto locationId = m_model.searchLocationFormPosition();
+          m_model.displayLocation = locationId;
+          break;
+        }
+
         default:
           // Never happend
           assert(false);
