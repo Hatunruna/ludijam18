@@ -31,6 +31,7 @@
 namespace no {
 
   using Tick = int;
+  constexpr float TickAsSeconds = 2.0f;
 
   using LocationId = std::ptrdiff_t;
   constexpr std::ptrdiff_t InvalidId = -1;
@@ -85,6 +86,12 @@ namespace no {
   struct Package {
     Tick remaining;
     float quantity;
+
+    // For render only
+    std::size_t currentSegment;
+    Tick currentDelay;
+    gf::Vector2f position;
+    gf::Vector2f step;
   };
 
   enum class RoadState {
@@ -95,6 +102,7 @@ namespace no {
   struct Road {
     RoadId id;
     std::vector<SegmentId> waypoints;
+    SourceId source;
     float length = 0.0f;
     Tick delay = 0;
 
@@ -102,7 +110,7 @@ namespace no {
     float charge = 0.0f;
     RoadState state;
 
-    std::queue<Package> packages;
+    std::deque<Package> packages;
   };
 
   struct Effect {
@@ -154,6 +162,10 @@ namespace no {
     SourceId isSource(LocationId locId) const;
     ConsumerId isConsumer(LocationId locId) const;
 
+    // Package updater
+    void sendNewPackage(Road &road);
+    void updatePackages(Road &road);
+
     virtual void update(gf::Time time) override;
 
     // static
@@ -182,6 +194,9 @@ namespace no {
     gf::Vector2f worldPosition;
     gf::Vector2f screenPosition;
     gf::RectF fieldOfView;
+
+    // Time
+    gf::Time timeElapsed;
   };
 
 }

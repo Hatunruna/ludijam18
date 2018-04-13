@@ -17,8 +17,12 @@
  */
 #include "EconomicModel.h"
 
+#include <algorithm>
+#include <cassert>
+
 #include <gf/Circ.h>
 #include <gf/Log.h>
+#include <gf/Math.h>
 #include <gf/Model.h>
 #include <gf/Unused.h>
 
@@ -195,8 +199,8 @@ namespace no {
     createSegment(locAtlanticGibraltar, locAtlanticAzores, 1.0f, 1, 1.0f);
     createSegment(locAtlanticAzores, locAtlanticWest, 1.0f, 1, 1.0f);
     createSegment(locAtlanticAzores, locAtlanticEquator, 1.0f, 1, 1.0f);
-    createSegment(locAtlanticEquator, oilNigeria, 1.0f, 1, 1.0f);
-    createSegment(locAtlanticEquator, consBrazil, 1.0f, 1, 1.0f);
+    createSegment(locAtlanticEquator, oilNigeria, 1.0f, 5, 1.0f);
+    createSegment(locAtlanticEquator, consBrazil, 1.0f, 2, 1.0f);
     createSegment(locAtlanticEquator, locAtlanticSouth, 1.0f, 1, 1.0f);
     createSegment(locAtlanticSouth, urNamiba, 1.0f, 1, 1.0f);
     createSegment(locAtlanticSouth, locAtlanticArgentina, 1.0f, 1, 1.0f);
@@ -294,6 +298,7 @@ namespace no {
   }
 
   void EconomicModel::createSegment(const LocationId id0, const LocationId id1, float charge, Tick delay, float length) {
+    // Push segement to go to endPoints[0] -> endPoints[1]
     Segment segment;
     segment.id = segments.size();
     segment.endPoints[0] = id0;
@@ -303,10 +308,41 @@ namespace no {
     segment.length = length;
 
     segments.push_back(segment);
+
+    // Push segement to go to endPoints[1] -> endPoints[0]
+    segment.id = segments.size();
+    segment.endPoints[0] = id1;
+    segment.endPoints[1] = id0;
+    segment.charge = charge;
+    segment.delay = delay;
+    segment.length = length;
+
+    segments.push_back(segment);
   }
 
   void EconomicModel::update(gf::Time time) {
-    gf::unused(time);
+    timeElapsed += time;
+
+    // Update package position
+    for (auto &roadEntry: roads) {
+      Road &road = roadEntry.second;
+
+      for (Package &package: road.packages) {
+        package.position += package.step * time.asSeconds();
+      }
+    }
+
+    // If it's a new tick
+    if (timeElapsed.asSeconds() >= TickAsSeconds) {
+      timeElapsed -= gf::seconds(TickAsSeconds);
+
+      // Create a new package for all active road
+      for (auto &roadEntry: roads) {
+        Road &road = roadEntry.second;
+        updatePackages(road);
+        sendNewPackage(road);
+      }
+    }
   }
 
   /*
@@ -342,12 +378,13 @@ namespace no {
   void EconomicModel::resetState() {
     draftRoad.id = InvalidId;
     draftRoad.waypoints.clear();
+    draftRoad.source = InvalidId;
     draftRoad.length = 0.0f;
     draftRoad.delay = 0;
     draftRoad.quantity = 0.0f;
     draftRoad.charge = 0.0f;
     draftRoad.state = RoadState::Active;
-    draftRoad.packages = std::move(std::queue<Package>());
+    draftRoad.packages = std::move(std::deque<Package>());
 
     previousLocation = InvalidId;
     displayLocation = InvalidId;
@@ -362,6 +399,7 @@ namespace no {
       if (sourceId != InvalidId && built.count(sourceId) == 1) {
         auto source = sources[sourceId];
         previousLocation = source.loc;
+        draftRoad.source = sourceId;
       }
 
       return InvalidId;
@@ -428,7 +466,7 @@ namespace no {
 
   SegmentId EconomicModel::isValidSegment(LocationId locId0, LocationId locId1) const {
     for (auto seg: segments) {
-      if ((seg.endPoints[0] == locId0 && seg.endPoints[1] == locId1) || (seg.endPoints[0] == locId1 && seg.endPoints[1] == locId0)) {
+      if (seg.endPoints[0] == locId0 && seg.endPoints[1] == locId1) {
         return seg.id;
       }
     }
@@ -454,6 +492,67 @@ namespace no {
     }
 
     return InvalidId;
+  }
+
+  void EconomicModel::sendNewPackage(Road &road) {
+    if (road.state == RoadState::Active) {
+      Package package;
+      package.quantity = road.quantity;
+      package.remaining = road.delay;
+      package.currentSegment = 0;
+
+      Segment currentSegment = segments[road.waypoints[0]];
+      package.currentDelay = currentSegment.delay;
+
+      gf::Vector2f origin = locations[currentSegment.endPoints[0]].position;
+      gf::Vector2f target = locations[currentSegment.endPoints[1]].position;
+
+      package.position = origin;
+      package.step = (target - origin) / (currentSegment.delay * TickAsSeconds);
+
+      road.packages.push_back(package);
+    }
+  }
+
+  void EconomicModel::updatePackages(Road &road) {
+    // if the target is reached
+    for (Package &package: road.packages) {
+      --package.remaining;
+      --package.currentDelay;
+
+      // If it's not the last step but it's the end of current step
+      if(package.remaining > 0 && package.currentDelay == 0) {
+        assert(package.currentSegment < road.waypoints.size() - 1);
+
+        // We compute the next step
+        ++package.currentSegment;
+
+        Segment nextSegment = segments[road.waypoints[package.currentSegment]];
+        package.currentDelay = nextSegment.delay;
+
+        gf::Vector2f origin = locations[nextSegment.endPoints[0]].position;
+        gf::Vector2f target = locations[nextSegment.endPoints[1]].position;
+
+        package.position = origin;
+        package.step = (target - origin) / (nextSegment.delay * TickAsSeconds);
+      }
+    }
+
+    // Deliver package
+    std::deque<Package>::iterator deliveredPackages = std::remove_if(road.packages.begin(), road.packages.end(), [](Package package){
+      return package.remaining <= 0;
+    });
+    auto removePackage = deliveredPackages;
+
+    while (deliveredPackages != road.packages.end()) {
+      gf::Log::debug("Funds incoming!\n");
+      deliveredPackages++;
+    }
+
+    // If some packages was delivered
+    if (removePackage != road.packages.end()) {
+      road.packages.erase(removePackage);
+    }
   }
 
 }

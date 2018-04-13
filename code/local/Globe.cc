@@ -92,6 +92,30 @@ namespace no {
       }
     }
 
+    // Draw packages
+    for (auto &roadEntry: m_model.roads) {
+      Road &road = roadEntry.second;
+
+      for (Package package: road.packages) {
+        gf::CircleShape shape;
+        shape.setRadius(2.0f);
+        switch (m_model.sources[road.source].resource) {
+        case Resource::Oil:
+          shape.setColor(gf::Color::Black * gf::Color::Opaque(0.9f));
+          break;
+        case Resource::Uranium:
+          shape.setColor(gf::Color::Chartreuse * gf::Color::Opaque(0.9f));
+          break;
+        }
+        shape.setPosition(package.position);
+        shape.setAnchor(gf::Anchor::Center);
+        target.draw(shape, states);
+      }
+
+      // gf::Log::debug("Road #%ld: delay %d\n", road.id, road.delay);
+      // gf::Log::debug("Road #%ld: packages.size %zu\n", road.id, road.packages.size());
+    }
+
     // Draw consumers
     for (const auto &consumer: m_model.consumers) {
       gf::CircleShape shape;
