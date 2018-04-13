@@ -408,6 +408,26 @@ namespace no {
     // If it's the next waypoint we get the current location
     LocationId locId = searchLocationFormPosition();
 
+    // If the player wants cancel previous point
+    if (locId == previousLocation) {
+      // If the previous point is the source
+      if (draftRoad.waypoints.size() == 0) {
+        previousLocation = InvalidId;
+      }
+      // If a previous segment exists
+      else {
+        Segment previousSegment = segments[draftRoad.waypoints.back()];
+        previousLocation = previousSegment.endPoints[0];
+        draftRoad.charge -= previousSegment.charge;
+        draftRoad.delay -= previousSegment.delay;
+        draftRoad.length -= previousSegment.length;
+
+        draftRoad.waypoints.pop_back();
+      }
+
+      return InvalidId;
+    }
+
     // And we check if it's a valid segment
     SegmentId segId = isValidSegment(previousLocation, locId);
     if (segId != InvalidId) {

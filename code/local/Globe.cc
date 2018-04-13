@@ -111,9 +111,6 @@ namespace no {
         shape.setAnchor(gf::Anchor::Center);
         target.draw(shape, states);
       }
-
-      // gf::Log::debug("Road #%ld: delay %d\n", road.id, road.delay);
-      // gf::Log::debug("Road #%ld: packages.size %zu\n", road.id, road.packages.size());
     }
 
     // Draw consumers
@@ -165,6 +162,17 @@ namespace no {
         sprite.setAnchor(gf::Anchor::Center);
         target.draw(sprite, states);
       }
+    }
+
+    // Draw cancel point
+    if (m_model.previousLocation != InvalidId) {
+      gf::CircleShape shape;
+      shape.setPosition(m_model.locations[m_model.previousLocation].position);
+      shape.setRadius(5.0f);
+      shape.setColor(gf::Color::Red);
+      shape.setOutlineThickness(0.0f);
+      shape.setAnchor(gf::Anchor::Center);
+      target.draw(shape, states);
     }
   }
 
